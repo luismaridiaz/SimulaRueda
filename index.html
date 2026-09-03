@@ -312,8 +312,8 @@ textarea{min-height:160px;resize:vertical;}
           <input type="range" id="vTmax" min="60" max="900" value="220" step="10"></div>
         <div class="cg"><label>Par máximo freno <span class="v" id="valTbr">900</span> N·m</label>
           <input type="range" id="vTbr" min="100" max="2500" value="900" step="25"></div>
-        <div class="cg"><label>Ackermann trapecio <span class="v" id="valAck">80</span> %</label>
-          <input type="range" id="vAck" min="0" max="120" value="80" step="5"></div>
+        <div class="cg"><label>Ackermann trapecio <span class="v" id="valAck">0</span> %</label>
+          <input type="range" id="vAck" min="0" max="120" value="0" step="5"></div>
         <div class="cg"><label>Diferencial</label>
           <select id="vDiff">
             <option value="OPEN">Abierto</option>
@@ -984,7 +984,7 @@ var vehicle = {
   finalDrive: 3.7, gear: 1, gearMode: 'AUTO',
   gearRatios: [0, 3.50, 2.20, 1.52, 1.15, 0.87],
   diffMode: 'OPEN', lsdC: 70, Tbrake: 900,
-  ackArm: 0.18, ackTie: 0.52, ackPercent: 80, ackRack: 0.16,
+  ackArm: 0.18, ackTie: 0.52, ackPercent: 0, ackRack: 0.16,
   omegaE: 90
 };
 
@@ -1171,49 +1171,33 @@ function readControls(dt){
 }
 
 /* ===== EXTENDED VEHICLE DYNAMICS (lumped) ===== */
-function trapezoidSteerAngles(steerRack, wheelDefs, p){
+function trapezoidSteerAngles(steerRad, wheelDefs, p){
   var out = {};
-  var L = Math.max(0.8, p.wheelbase);
-  var track = Math.max(0.8, p.track);
-  var Larm = p.ackArm || 0.18;
-  var ackFrac = (p.ackPercent != null ? p.ackPercent : 80) / 100;
-  var ack0 = ackFrac * Math.atan(track / (2 * L));
-  var zArm = -Larm * Math.cos(ack0);
-  var Ltie = p.ackTie || (track * 0.5 - Larm * Math.sin(ack0) - 0.08);
-  Ltie = Math.max(0.12, Ltie);
-  var rackHalf = track * 0.28;
-  var rackZ = zArm;
   var maxSteer = (p.steerMaxDeg || 30) * Math.PI / 180;
-  var rackTravel = Math.max(-0.10, Math.min(0.10, steerRack * (p.ackRack || 0.16)));
-
-  function solveOne(side, bKing, guess){
-    var rackX = (side === 'L' ? rackHalf : -rackHalf) + rackTravel;
-    var signIn = (side === 'L') ? -1 : 1;
-    var restAx = signIn * Larm * Math.sin(ack0);
-    var restAz = zArm;
-    var d = guess || 0;
-    for (var it = 0; it < 8; it++){
-      var c = Math.cos(d), s = Math.sin(d);
-      var ax = restAx * c - restAz * s;
-      var az = restAx * s + restAz * c;
-      var px = bKing + ax, pz = az;
-      var dx = px - rackX, dz = pz - rackZ;
-      var dist = Math.sqrt(dx * dx + dz * dz);
-      var f = dist - Ltie;
-      var dax = -restAx * s - restAz * c;
-      var daz = restAx * c - restAz * s;
-      var df = dist > 1e-6 ? (dx * dax + dz * daz) / dist : 1;
-      if (Math.abs(df) < 1e-5) break;
-      d -= f / df;
-      d = Math.max(-maxSteer * 1.3, Math.min(maxSteer * 1.3, d));
+  var delta = Math.max(-maxSteer, Math.min(maxSteer, steerRad || 0));
+  if (Math.abs(delta) < 1e-4) delta = 0;
+  // Direccion paralela: las dos delanteras el MISMO angulo.
+  // El % Ackermann solo anade una diferencia interior/exterior al girar,
+  // nunca un signo distinto ni un angulo en recta.
+  var t = Math.max(0.5, p.track);
+  var L = Math.max(0.5, p.wheelbase);
+  var ackFrac = Math.max(0, Math.min(1, (p.ackPercent != null ? p.ackPercent : 0) / 100));
+  var dL = delta, dR = delta;
+  if (ackFrac > 0 && Math.abs(delta) >= 1e-4){
+    var Rturn = L / Math.tan(delta);
+    var dAckL = Math.atan(L / (Rturn - t/2));
+    var dAckR = Math.atan(L / (Rturn + t/2));
+    if (isFinite(dAckL) && isFinite(dAckR)){
+      dL = delta + ackFrac * (dAckL - delta);
+      dR = delta + ackFrac * (dAckR - delta);
     }
-    return d;
+    if (delta > 0){ dL = Math.abs(dL); dR = Math.abs(dR); }
+    else { dL = -Math.abs(dL); dR = -Math.abs(dR); }
   }
-
   wheelDefs.forEach(function(w){
     if (!w.steerable){ out[w.id] = 0; return; }
-    if (w.side === 'C'){ out[w.id] = Math.max(-maxSteer, Math.min(maxSteer, steerRack)); return; }
-    out[w.id] = solveOne(w.side, w.b, steerRack * (w.side === 'L' ? 1.05 : 0.95));
+    if (w.side === 'C'){ out[w.id] = delta; return; }
+    out[w.id] = (w.side === 'L') ? dL : dR;
   });
   return out;
 }
@@ -1502,59 +1486,64 @@ var scene4wReady = false;
 function makeWheelMesh4w(){
   var g = new THREE.Group();
   var spinGroup = new THREE.Group();
-  var orientGroup = new THREE.Group();
-  orientGroup.rotation.y = Math.PI/2;
   var R0 = Math.max(0.18, coefs.R0 || 0.315);
   var halfW = Math.max(0.04, (vehicle.tireWidthMm||215)/2000);
   var tube = Math.min(0.45*R0, Math.max(0.035, halfW*0.85));
   var torusR = Math.max(0.12, R0 - tube);
 
+  // Vertices ya en plano YZ, eje de rueda = X (lateral del coche).
+  // Asi la camara de persecucion (mira hacia +Z) ve el PERFIL, no la cara.
+  function axleX(geo){ geo.rotateY(Math.PI/2); return geo; }
+
   var tireMesh = new THREE.Mesh(
-    new THREE.TorusGeometry(torusR, tube, 12, 20),
+    axleX(new THREE.TorusGeometry(torusR, tube, 12, 20)),
     new THREE.MeshStandardMaterial({ color:0x3a3a48, roughness:0.85, metalness:0.08 })
   );
-  orientGroup.add(tireMesh);
+  spinGroup.add(tireMesh);
   var rimRing = new THREE.Mesh(
-    new THREE.TorusGeometry(torusR*0.78, Math.max(0.012, tube*0.22), 8, 16),
+    axleX(new THREE.TorusGeometry(torusR*0.78, Math.max(0.012, tube*0.22), 8, 16)),
     new THREE.MeshStandardMaterial({ color:0xc5d0dc, roughness:0.25, metalness:0.85 })
   );
-  orientGroup.add(rimRing);
+  spinGroup.add(rimRing);
 
+  var hubGeo = new THREE.CylinderGeometry(0.32*R0, 0.32*R0, Math.max(0.06, halfW*1.35), 16);
+  hubGeo.rotateZ(Math.PI/2);
   var hub = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.32*R0, 0.32*R0, Math.max(0.06, halfW*1.35), 16),
+    hubGeo,
     new THREE.MeshStandardMaterial({ color:0x00d4ff, roughness:0.3, metalness:0.7, emissive:0x00d4ff, emissiveIntensity:0.4 })
   );
-  hub.rotation.x = Math.PI/2;
-  orientGroup.add(hub);
-  var faceMat = new THREE.MeshStandardMaterial({ color:0x8aa0b8, roughness:0.35, metalness:0.6 });
-  var face = new THREE.Mesh(new THREE.CircleGeometry(0.34*R0, 16), faceMat);
-  face.position.z = halfW*0.55;
-  orientGroup.add(face);
-  var face2 = face.clone();
-  face2.position.z = -halfW*0.55;
-  face2.rotation.y = Math.PI;
-  orientGroup.add(face2);
+  spinGroup.add(hub);
+
+  var faceMat = new THREE.MeshStandardMaterial({ color:0x8aa0b8, roughness:0.35, metalness:0.6, side: THREE.DoubleSide });
+  var face = new THREE.Mesh(axleX(new THREE.CircleGeometry(0.34*R0, 16)), faceMat);
+  face.position.x = halfW*0.55;
+  spinGroup.add(face);
+  var face2 = new THREE.Mesh(axleX(new THREE.CircleGeometry(0.34*R0, 16)), faceMat);
+  face2.position.x = -halfW*0.55;
+  spinGroup.add(face2);
+
   var spokeMat = new THREE.MeshStandardMaterial({ color:0xd0dbe8, roughness:0.35, metalness:0.7 });
   for (var i=0;i<4;i++){
-    var spoke = new THREE.Mesh(new THREE.BoxGeometry(1.55*torusR, 0.045, 0.045), spokeMat);
-    spoke.rotation.z = i*(Math.PI/4);
-    orientGroup.add(spoke);
+    var spoke = new THREE.Mesh(new THREE.BoxGeometry(0.03, 1.55*torusR, 0.03), spokeMat);
+    spoke.rotation.x = i*(Math.PI/4);
+    spinGroup.add(spoke);
   }
+
   var marks = new THREE.Group();
   var treadMat = new THREE.MeshStandardMaterial({ color:0x5b5b6a, roughness:0.9, metalness:0.05 });
   var markMat = new THREE.MeshStandardMaterial({ color:0xffe14a, roughness:0.35, metalness:0.1, emissive:0xffc400, emissiveIntensity:0.7 });
   for (var t=0;t<8;t++){
     var ang = t*Math.PI/4;
-    var bar = new THREE.Mesh(new THREE.BoxGeometry(0.055, 0.085, Math.max(0.07, halfW*2.15)), treadMat);
-    bar.position.set(Math.cos(ang)*(torusR+tube*0.15), Math.sin(ang)*(torusR+tube*0.15), 0);
-    bar.rotation.z = ang;
+    var bar = new THREE.Mesh(new THREE.BoxGeometry(Math.max(0.07, halfW*2.15), 0.055, 0.085), treadMat);
+    bar.position.set(0, Math.cos(ang)*(torusR+tube*0.15), Math.sin(ang)*(torusR+tube*0.15));
+    bar.rotation.x = ang;
     marks.add(bar);
   }
-  var mark = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.10, Math.max(0.08, halfW*2.3)), markMat);
-  mark.position.set(torusR+tube*0.2, 0, 0);
+  var mark = new THREE.Mesh(new THREE.BoxGeometry(Math.max(0.08, halfW*2.3), 0.07, 0.10), markMat);
+  mark.position.set(0, torusR+tube*0.2, 0);
   marks.add(mark);
-  orientGroup.add(marks);
-  spinGroup.add(orientGroup);
+  spinGroup.add(marks);
+
   g.add(spinGroup);
   var arrow = createArrow(0x4ecdc4);
   arrow.scale.set(0.6,0.6,0.6);
@@ -1690,8 +1679,14 @@ function update4wScene(results, kappasMap){
     var mesh = wheelMeshes4w[w.id];
     if (!mesh) return;
     mesh.position.set(w.b, Math.max(0.18, coefs.R0||0.315), w.a);
-    if (mesh.userData.spinGroup) mesh.userData.spinGroup.rotation.x = wheelSpin[w.id]||0;
-    var steerVis = (chassis._steerMap && chassis._steerMap[w.id] != null) ? chassis._steerMap[w.id] : (w.steerable ? controls.steerRad : 0);
+    if (mesh.userData.spinGroup) mesh.userData.spinGroup.rotation.x = -(wheelSpin[w.id]||0);
+    var steerVis = 0;
+    if (w.steerable){
+      if (chassis._steerMap && chassis._steerMap[w.id] != null) steerVis = chassis._steerMap[w.id];
+      else steerVis = controls.steerRad || 0;
+    }
+    if (!vehicleRunning || Math.abs(controls.steerRad||0) < 1e-4) steerVis = w.steerable ? 0 : 0;
+    if (!w.steerable) steerVis = 0;
     mesh.rotation.y = steerVis;
     var r = results[w.id] || { Fx:0, Fy:0 };
     var scale = 0.00008, maxLen = 0.35;
