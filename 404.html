@@ -2,41 +2,60 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#0a0e17">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=yes">
+<meta name="theme-color" content="#16120e">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>TireSim Pro - Modelo Pacejka MF (juego + ingeniería)</title>
+<title>TireSim Pro — 6DOF + hop + flexión</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 :root{
-  --bg-primary:#0a0e17;--bg-secondary:#111927;--bg-card:#1a2332;--bg-input:#0f1825;
-  --text-primary:#e8edf5;--text-secondary:#8899bb;--accent:#00d4ff;
-  --accent-glow:rgba(0,212,255,0.15);--border-color:#2a3a55;
-  --shadow:0 8px 32px rgba(0,0,0,0.6);--radius:12px;--transition:0.2s ease;
-  --chart-grid:#1a2332;--chart-tick:#8899bb;--scene-bg:#0a0e17;
+  --bg-primary:#0d1117;--bg-secondary:#161b22;--bg-card:#1c2128;--bg-input:#0d1117;
+  --text-primary:#e6edf3;--text-secondary:#8b949e;--accent:#58a6ff;
+  --accent-glow:rgba(88,166,255,0.16);--border-color:#30363d;
+  --shadow:0 10px 36px rgba(0,0,0,0.5);--radius:14px;--transition:0.2s ease;
+  --chart-grid:#21262d;--chart-tick:#8b949e;--scene-bg:#0d1117;
 }
 :root[data-theme="light"]{
-  --bg-primary:#eef1f7;--bg-secondary:#ffffff;--bg-card:#f4f6fb;--bg-input:#f7f9fc;
-  --text-primary:#141b2a;--text-secondary:#4f5f7a;--accent:#0090b0;
-  --accent-glow:rgba(0,144,176,0.14);--border-color:#d3dbe8;
-  --shadow:0 8px 28px rgba(20,30,50,0.12);--radius:12px;--transition:0.2s ease;
-  --chart-grid:#e2e7f0;--chart-tick:#5a6b8c;--scene-bg:#dde3ee;
+  --bg-primary:#f6f8fa;--bg-secondary:#ffffff;--bg-card:#eef1f5;--bg-input:#f6f8fa;
+  --text-primary:#1f2328;--text-secondary:#57606a;--accent:#0969da;
+  --accent-glow:rgba(9,105,218,0.12);--border-color:#d0d7de;
+  --shadow:0 8px 28px rgba(31,35,40,0.10);--radius:12px;--transition:0.2s ease;
+  --chart-grid:#eaeef2;--chart-tick:#57606a;--scene-bg:#eaeef2;
 }
+:root[data-theme="light"] .section-title{color:#57606a;border-bottom-color:#d0d7de;}
+:root[data-theme="light"] select option{background:#ffffff;color:#1f2328;}
+:root[data-theme="light"] .btn-secondary{background:#f6f8fa;color:#1f2328;border-color:#d0d7de;}
+:root[data-theme="light"] .toast{background:#ffffff;color:#1f2328;border-color:#d0d7de;}
+:root[data-theme="light"] .badge{background:#f6f8fa;color:#1f2328;}
+:root[data-theme="light"] label .v{color:#1f2328;}
+:root[data-theme="light"] .header h1,
+:root[data-theme="light"] .brand h1{background:none;-webkit-text-fill-color:#1f2328;color:#1f2328;}
+:root[data-theme="light"] .header .sub,
+:root[data-theme="light"] .brand span{color:#57606a;-webkit-text-fill-color:#57606a;}
+:root[data-theme="light"] .status{color:#57606a;}
+:root[data-theme="light"] #manualPanel{color:#1f2328;}
+:root[data-theme="light"] .chart-title{color:#57606a;}
+:root[data-theme="light"] .stat-label{color:#57606a;}
+:root[data-theme="light"] .stat-card{background:var(--bg-input);border-color:var(--border-color);}
+:root[data-theme="light"] input[type=range]{background:#eaeef2;border-color:#d0d7de;}
+
 html,body{overscroll-behavior:none;-webkit-text-size-adjust:100%;}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg-primary);color:var(--text-primary);min-height:100vh;padding:12px;padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:radial-gradient(1100px 520px at 8% -8%,#1a2233 0%,var(--bg-primary) 58%);color:var(--text-primary);min-height:100vh;padding:12px;padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));}
 .app{max-width:1500px;margin:0 auto;display:flex;flex-direction:column;gap:14px;}
-.header{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;background:var(--bg-secondary);border-radius:var(--radius);border:1px solid var(--border-color);flex-wrap:wrap;gap:10px;}
+.header{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;background:linear-gradient(180deg,rgba(255,255,255,0.03),transparent),var(--bg-secondary);border-radius:var(--radius);border:1px solid var(--border-color);flex-wrap:wrap;gap:10px;}
 .brand{display:flex;align-items:center;gap:12px;}
-.logo{width:40px;height:40px;background:linear-gradient(135deg,var(--accent),#0066ff);border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:#fff;}
+.logo{width:40px;height:40px;background:linear-gradient(145deg,#79c0ff,#1f6feb);border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;color:#0d1117;box-shadow:0 0 0 1px rgba(160,210,255,0.2),0 8px 18px rgba(31,111,235,0.35);}
 .brand h1{font-size:18px;font-weight:700;}
 .brand .sub{font-size:11px;color:var(--text-secondary);display:block;}
 .status{display:flex;align-items:center;gap:14px;font-size:12px;color:var(--text-secondary);flex-wrap:wrap;}
 .dot{width:8px;height:8px;border-radius:50%;background:#00ff88;display:inline-block;}
-.honesty-note{background:#1a2332;border:1px solid #ff9100;border-radius:8px;padding:10px 14px;font-size:12px;color:var(--text-secondary);line-height:1.5;}
-.honesty-note b{color:#ff9100;}
+.honesty-note{background:var(--bg-card);border:1px solid #ff9100;border-radius:8px;padding:10px 14px;font-size:12px;color:var(--text-primary);line-height:1.5;}
+.honesty-note b{color:#c45f00;}
+:root[data-theme="light"] .honesty-note{background:#fff8ef;border-color:#e67e00;color:#1a1a1a;}
+:root[data-theme="light"] .honesty-note b{color:#a04a00;}
 .grid-main{display:grid;grid-template-columns:330px 1fr;gap:14px;}
 @media (max-width:1024px){.grid-main{grid-template-columns:1fr;}}
 .panel{background:var(--bg-secondary);border-radius:var(--radius);border:1px solid var(--border-color);padding:16px;display:flex;flex-direction:column;gap:14px;}
@@ -46,15 +65,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .cg label{font-size:12px;font-weight:500;display:flex;justify-content:space-between;color:var(--text-secondary);}
 .cg label .v{color:var(--text-primary);font-family:Menlo,Consolas,monospace;font-size:12px;}
 input[type=range]{-webkit-appearance:none;width:100%;height:5px;border-radius:4px;background:var(--bg-input);border:1px solid var(--border-color);}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#0066ff);cursor:pointer;border:2px solid var(--bg-primary);}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,#79c0ff,#1f6feb);cursor:pointer;border:2px solid var(--bg-primary);}
 select,textarea,input[type=number]{width:100%;padding:7px 10px;background:var(--bg-input);color:var(--text-primary);border:1px solid var(--border-color);border-radius:8px;font-size:12px;font-family:Menlo,Consolas,monospace;}
 textarea{min-height:160px;resize:vertical;}
 .btn-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 .btn{padding:9px 12px;border:none;border-radius:8px;font-weight:600;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:var(--transition);}
-.btn-primary{background:linear-gradient(135deg,var(--accent),#0066ff);color:#fff;}
+.btn-primary{background:linear-gradient(135deg,#58a6ff,#1f6feb);color:#0d1117;}
 .btn-secondary{background:var(--bg-input);color:var(--text-primary);border:1px solid var(--border-color);}
-.btn-success{background:#00c853;color:#fff;}
-.btn-warning{background:#ff9100;color:#fff;}
+.btn-success{background:#6f9b4a;color:#fff;}
+.btn-warning{background:#d4782a;color:#fff;}
+.btn-danger{background:#c4472f;color:#fff;}
 .btn:hover{filter:brightness(1.12);}
 .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 .stat{background:var(--bg-input);border-radius:8px;padding:10px 12px;border:1px solid var(--border-color);text-align:center;}
@@ -63,7 +83,8 @@ textarea{min-height:160px;resize:vertical;}
 .fx{color:#ff6b6b;}.fy{color:#4ecdc4;}.mz{color:#ffd93d;}
 .canvas3d{background:var(--bg-secondary);border-radius:var(--radius);border:1px solid var(--border-color);height:300px;position:relative;overflow:hidden;touch-action:none;cursor:grab;}
 .canvas3d #three-canvas, .canvas3d #three-canvas-4w{width:100%;height:100%;}
-.overlay{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.75);padding:5px 14px;border-radius:14px;font-size:11px;color:var(--text-secondary);border:1px solid var(--border-color);white-space:nowrap;font-family:Menlo,Consolas,monospace;}
+.overlay{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.82);padding:5px 14px;border-radius:14px;font-size:11px;color:#e8edf5;border:1px solid rgba(255,255,255,0.15);white-space:nowrap;font-family:Menlo,Consolas,monospace;}
+:root[data-theme="light"] .overlay{background:rgba(15,22,36,0.9);color:#f2f5fa;}
 .chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 @media (max-width:640px){.chart-grid{grid-template-columns:1fr;}}
 .chart-box{background:var(--bg-secondary);border-radius:var(--radius);border:1px solid var(--border-color);padding:12px;}
@@ -73,6 +94,28 @@ textarea{min-height:160px;resize:vertical;}
 .badge{background:var(--bg-input);padding:2px 10px;border-radius:12px;border:1px solid var(--border-color);font-size:10px;}
 .toast{position:fixed;bottom:24px;right:24px;background:var(--bg-card);border:1px solid var(--border-color);padding:12px 20px;border-radius:var(--radius);box-shadow:var(--shadow);font-size:13px;transform:translateY(120px);opacity:0;transition:all 0.35s ease;z-index:999;max-width:340px;}
 .toast.show{transform:translateY(0);opacity:1;}
+.lang-switch{display:inline-flex;border:1px solid var(--border-color);border-radius:8px;overflow:hidden;flex-shrink:0;}
+.lang-switch button{background:var(--bg-input);color:var(--text-secondary);border:0;padding:6px 11px;font:600 12px/1 Inter,system-ui,sans-serif;cursor:pointer;min-width:40px;}
+.lang-switch button + button{border-left:1px solid var(--border-color);}
+.lang-switch button.on{background:var(--accent);color:#1a140c;}
+.tele-wrap{display:grid;grid-template-columns:1fr 220px;gap:10px;margin-top:10px;}
+@media (max-width:720px){
+  .tele-wrap{grid-template-columns:1fr;}
+  .canvas3d{height:360px !important;}
+  .btn-row.three{grid-template-columns:1fr 1fr;}
+  .overlay{font-size:9px;max-width:96%;white-space:normal;text-align:center;}
+  .header{padding:10px 12px;}
+  .tele-grid{grid-template-columns:repeat(2,1fr);}
+}
+.tele-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px;}
+.tele-item{background:var(--bg-input);border:1px solid var(--border-color);border-radius:8px;padding:6px 8px;text-align:center;}
+.tele-item .tv{font-family:Menlo,monospace;font-size:12px;font-weight:700;}
+.tele-item .tl{font-size:9px;color:var(--text-secondary);text-transform:uppercase;}
+.gps-wrap{position:relative;height:120px;background:var(--bg-input);border:1px solid var(--border-color);border-radius:8px;overflow:hidden;margin-top:8px;}
+.gps-wrap canvas{width:100%;height:100%;display:block;}
+.traffic-list{display:flex;flex-direction:column;gap:3px;max-height:88px;overflow:auto;margin-top:6px;font-size:11px;}
+.traffic-row{display:flex;justify-content:space-between;background:var(--bg-input);border-left:3px solid #ff6b35;padding:3px 6px;border-radius:4px;}
+
 .adv-toggle{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-secondary);cursor:pointer;}
 .adv-panel{display:none;flex-direction:column;gap:8px;}
 .adv-panel.open{display:flex;}
@@ -85,108 +128,118 @@ textarea{min-height:160px;resize:vertical;}
 <div class="app">
   <header class="header">
     <div class="brand">
-      <div class="logo">⚙️</div>
-      <div><h1>TireSim Pro</h1><span class="sub">Modelo Magic Formula (Pacejka) con deslizamiento combinado y longitud de relajación</span></div>
+      <div class="logo">TS</div>
+      <div><h1>TireSim Pro</h1><span class="sub">Cerda Dahl–Stribeck · rampa · ABS/TCS · ADAS · tráfico</span></div>
     </div>
     <div class="status">
       <span><span class="dot"></span> simulando</span>
       <span id="fpsDisplay">60 FPS</span>
-      <button class="btn btn-secondary" id="btnManual" style="padding:6px 12px;">📖 Manual</button>
+      <div class="lang-switch" role="group" aria-label="Idioma / Language">
+        <button type="button" id="btnLangEs" data-lang="es">ES</button>
+        <button type="button" id="btnLangEn" data-lang="en">EN</button>
+      </div>
+      <button class="btn btn-secondary" id="btnManual" style="padding:6px 12px;">❓ Ayuda</button>
       <button class="btn btn-secondary" id="btnTheme" style="padding:6px 12px;">🌙 Oscuro</button>
-      <button class="btn btn-secondary" id="btnExportEngine" style="padding:6px 12px;">📦 Exportar motor (JS)</button>
+      <button class="btn btn-secondary" id="btnExportEngine" style="padding:6px 12px;">📦 Motor JS</button>
     </div>
   </header>
 
-  <div id="manualPanel" class="panel" style="display:none; font-size:13px; line-height:1.55; color:var(--text-secondary);">
-    <div class="section-title">Manual breve — TireSim Pro</div>
-    <p style="margin-top:8px;"><b style="color:var(--text-primary);">Qué es.</b> Laboratorio en el navegador de un neumático (Fórmula Mágica de Pacejka, estructura tipo MF6.1) y de un vehículo plano de N ruedas (3 a 10) con suspensión y 3 grados de libertad (avance, deriva, guiñada). <b style="color:var(--text-primary);">Qué no es.</b> No es TNO MF-Tyre/MF-Swift ni un ensayo de banco. Los presets son genéricos, no de un fabricante.</p>
+  <div id="manualPanel" class="panel" style="display:none; font-size:13px; line-height:1.6; color:var(--text-secondary); max-height:70vh; overflow-y:auto;">
+    <div class="section-title" data-i18n="title_ayuda">Ayuda — TireSim Pro</div>
+    <p style="margin-top:8px;"><b style="color:var(--text-primary);">Qué es.</b> Laboratorio en el navegador: contacto de cerda (Dahl + Stribeck) y un vehículo de 3 a 10 ruedas con suspensión, motor, pendientes, ABS/TCS, ADAS, tráfico y un GPS de juguete. <b style="color:var(--text-primary);">Qué no es.</b> Ni banco de ensayos ni ADAS de un coche de serie. Los μ son genéricos.</p>
 
-    <div class="section-title" style="margin-top:12px;">1. Banco de una rueda (arriba)</div>
+    <div class="section-title" style="margin-top:14px;">Cabecera de la app</div>
     <ul style="margin:8px 0 0 18px;">
-      <li><b>Fz</b> — carga vertical (N).</li>
-      <li><b>κ</b> — deslizamiento longitudinal (frenada &lt; 0, tracción &gt; 0).</li>
-      <li><b>α</b> — ángulo de deriva (°).</li>
-      <li><b>γ</b> — camber (°).</li>
-      <li><b>Velocidad</b> — entra en la relajación: a más v, Fy/Fx se acercan antes al valor estacionario.</li>
-      <li><b>Preset</b> calle / deportivo / slick — cambia μ, rigideces y σ de ejemplo.</li>
-      <li><b>μ, rigidez κ, rigidez α, σ</b> — escalan el preset sin editar el JSON.</li>
-      <li><b>Modo avanzado</b> — pega coeficientes p/q/r y factores λ; «Aplicar coeficientes».</li>
-    </ul>
-    <p style="margin-top:8px;">Lecturas: Fx, Fy, Mz (autoalineante), μ efectivo, Mx (vuelco, simplificado), My (rodadura, simplificado). Las flechas 3D de esa vista son las mismas fuerzas. Arrastra para orbitar; rueda del ratón para zoom (en el teléfono, arrastre).</p>
-
-    <div class="section-title" style="margin-top:12px;">2. Gráficas</div>
-    <ul style="margin:8px 0 0 18px;">
-      <li>Fx vs κ — curva pura y la combinada (con α ≠ 0).</li>
-      <li>Fy vs α — igual con deslizamiento combinado.</li>
-      <li>Círculo de fricción — trayectoria Fx–Fy reciente.</li>
-      <li>Fy(t) — respuesta a un escalón de α (efecto de la longitud de relajación σ).</li>
+      <li><b>TS / TireSim Pro</b> — nombre. La línea pequeña solo lista lo que incluye el modelo (no es un estado en vivo).</li>
+      <li><b>Simulando + FPS</b> — el bucle de pantalla está activo. El coche no se mueve hasta que pulses Arrancar.</li>
+      <li><b>Ayuda</b> — este texto (ábrelo y ciérralo con el mismo botón).</li>
+      <li><b>Oscuro / Claro</b> — tema carbón–ámbar.</li>
+      <li><b>Exportar motor (JS)</b> — código para pegar en un juego: <code>step(dt, {throttle, brake, steer})</code>.</li>
     </ul>
 
-    <div class="section-title" style="margin-top:12px;">3. Controles del banco</div>
+    <div class="section-title" style="margin-top:14px;">Cómo empezar</div>
+    <ol style="margin:8px 0 0 22px;">
+      <li>Baja al bloque del vehículo y pulsa <b>Arrancar</b>.</li>
+      <li>En automático hay un creep suave: las ruedas giran sin gas.</li>
+      <li>Gas / freno / giro: sliders, WASD, o los botones táctiles.</li>
+      <li>Prueba rápida: <b>Test tráfico</b> o <b>ADAS test</b>.</li>
+    </ol>
+
+    <div class="section-title" style="margin-top:14px;">Banco de una rueda</div>
     <ul style="margin:8px 0 0 18px;">
-      <li><b>Pausar / Reanudar</b> — detiene el integrador de la rueda de detalle (no el coche, que tiene su propio botón).</li>
-      <li><b>Reset</b> — κ=α=γ=0, Fz=4000 N, v=60 km/h, historiales vacíos.</li>
-      <li><b>Barrido κ</b> — recorre κ de −0,3 a +0,3 para rellenar la curva Fx.</li>
-      <li><b>Grabar</b> — acumula muestras del banco (Fz, κ, α, γ, v, Fx, Fy, Mz, μ) hasta pulsar de nuevo.</li>
-      <li><b>Exportar CSV</b> — descarga esas muestras. Si no hay grabación, exporta una sola fila con el estado actual.</li>
+      <li><b>Fz</b> carga vertical. <b>κ</b> no se impone a mano en el coche: aquí es un deslizamiento de laboratorio.</li>
+      <li><b>α</b> deriva, <b>γ</b> camber, <b>velocidad</b> del banco.</li>
+      <li>Presets calle / deportivo / slick / invierno / lluvia / tototerreno — solo cambian μ y rigideces de ejemplo.</li>
+      <li>Pausar, Reset, Barrido y Grabar afectan solo a esta rueda, no al vehículo.</li>
+      <li>Marcas a los lados del neumático: referencia visual de giro; se pueden ocultar.</li>
     </ul>
 
-    <div class="section-title" style="margin-top:12px;">4. Vehículo de N ruedas</div>
+    <div class="section-title" style="margin-top:14px;">Vehículo</div>
     <ul style="margin:8px 0 0 18px;">
-      <li><b>Arrancar / Detener</b> — enciende el integrador del chasis. Sin esto el coche no se mueve.</li>
-      <li><b>Reset posición</b> — vuelve a (0,0), velocidades nulas.</li>
-      <li><b>Cámara</b> — persecución (sigue al coche) o fija (el coche se aleja; arrastra para orbitar).</li>
-      <li><b>Controles</b> — WASD / flechas, gatillos+stick de mando, o barra de dirección + botones ACELERAR/FRENAR (táctil).</li>
-      <li><b>N ruedas 3–10</b> — N impar: eje delantero con una rueda centrada. La batalla mínima sube sola para no solapar.</li>
-      <li><b>Masa, batalla, vía, altura CDG, % peso delantero, Iz</b> — inercia y geometría. El % delantero desplaza el CDG y cambia Fz estático.</li>
-      <li><b>Suspensión k y ζ</b> — muelle/amortiguador por rueda (2.º orden) hacia la Fz objetivo de la plataforma rígida.</li>
-      <li><b>Ángulo máx. dirección</b> — tope de δ. El primer eje usa Ackermann aproximado.</li>
-      <li><b>Factor α ejes no dir.</b> — multiplica el ángulo de deriva de ejes no directrices (ajuste empírico de subviraje, no un mecanismo real).</li>
-      <li><b>Tren motriz</b> — κ de tracción en eje delantero, trasero o todos. El freno aplica κ negativo a todas.</li>
-      <li><b>Llanta / ancho / perfil</b> — recalculan R0 y σ (flanco más bajo → σ menor). También el tamaño 3D.</li>
-    </ul>
-    <p style="margin-top:8px;">Overlay: v, rpm, marcha, ax, ay, θ, φ. Modelo lumped: heave/cabeceo/balanceo, Iw, motor+caja 5M, diff abierto/LSD/bloqueado, barras, trapecio. Q/E cambian marcha en modo manual. Sigue siendo un modelo de parámetros genéricos, no un vehículo medido.</p>
-
-    <div class="section-title" style="margin-top:12px;">5. Ayudas visuales 3D</div>
-    <p style="margin-top:8px;">Casillas para ocultar marca amarilla (giro), flecha cian (Fy) y buje cian. No alteran la física.</p>
-
-    <div class="section-title" style="margin-top:12px;">6. Exportaciones</div>
-    <ul style="margin:8px 0 0 18px;">
-      <li><b>📥 Exportar CSV</b> — archivo <code>tiresim_&lt;timestamp&gt;.csv</code>, columnas: Fz,kappa,alpha,gamma,speed,Fx,Fy,Mz,mu. Datos del banco de una rueda (grabación o estado actual). No incluye el vehículo completo.</li>
-      <li><b>📦 Exportar motor (JS)</b> — archivo <code>tiresim-engine.js</code> sin DOM ni Three.js. En un juego: <code>TireSimEngine.createVehicle(params)</code> y <code>car.step(dt, {throttle, brake, steerRad})</code>. Devuelve x, z, psi, velocidades y, por rueda, Fx, Fy, Mz, Fz, spinAngle, steerAngle.</li>
-      <li>Tema claro/oscuro se guarda en localStorage (<code>tiresim_theme</code>).</li>
+      <li><b>Arrancar / Detener</b> — integrador del chasis. <b>Reset posición</b> — (0,0) y velocidades a cero.</li>
+      <li><b>Cámara</b> persecución o fija (arrastrar para orbitar).</li>
+      <li><b>N ruedas 3–10</b>, 4WD, masa, batalla, vía, CDG, pendientes long/lat.</li>
+      <li>Caja AUTO/manual (Q/E), embrague, Hill Hold.</li>
+      <li>Superficie seco / mojado / nieve / hielo cambia el μ de todas las ruedas.</li>
     </ul>
 
-    <div class="section-title" style="margin-top:12px;">7. Límites (no omitidos)</div>
-    <p style="margin-top:8px;">Heave/cabeceo/balanceo son lineales (ángulo pequeño), sin hop de rueda ni chasis flexible. Motor = curva senoidal genérica. Trapecio = 4 barras en el plano del eje, no un McPherson 3D. Coeficientes de neumático no certificados. iPhone: red al cargar (CDN).</p>
+    <div class="section-title" style="margin-top:14px;">Ayudas y ADAS</div>
+    <ul style="margin:8px 0 0 18px;">
+      <li><b>ABS</b> — no deja bloquear (~slip 0,15). <b>TCS</b> — corta par si patina al acelerar.</li>
+      <li><b>ESP</b> — corrige un poco la guiñada.</li>
+      <li><b>ACC</b> — mantiene km/h; si hay coche o muro cerca, reduce. Se apaga al frenar tú.</li>
+      <li><b>LKA</b> — tira el volante al centro del carril (x = 0), con una vibración leve.</li>
+      <li><b>AEB</b> — frena si TTC (hueco / cierre) baja del umbral. Aviso en toast.</li>
+    </ul>
+
+    <div class="section-title" style="margin-top:14px;">Entorno</div>
+    <ul style="margin:8px 0 0 18px;">
+      <li><b>Baches</b> — cada rueda ve una altura; cambia Fz y el heave.</li>
+      <li><b>Colisiones</b> — muro rojo en +Z. Test choque ~12 m/s.</li>
+      <li><b>Tráfico</b> — hasta 10 coches. El ACC/AEB usan el más cercano delante.</li>
+      <li><b>GPS / telemetría</b> — lat/lon de juguete (origen Madrid), rumbo, TTC, lista de distancias.</li>
+    </ul>
+
+    <div class="section-title" style="margin-top:14px;">Teclas</div>
+    <ul style="margin:8px 0 0 18px;">
+      <li>W / ↑ gas · S / ↓ freno · A/D o ← → dirección · Q/E marcha (manual).</li>
+    </ul>
+
+    <div class="section-title" style="margin-top:14px;">Si no se mueve</div>
+    <ul style="margin:8px 0 0 18px;">
+      <li>Recarga forzada y pulsa Arrancar.</li>
+      <li>No estés en N con embrague a 0.</li>
+      <li>El freno a fondo anula el creep y el ACC.</li>
+    </ul>
+    <p style="margin-top:10px;">Hay un Word descargable con las fórmulas (Anexo A). Esta Ayuda es la versión corta para usarla en el teléfono.</p>
   </div>
 
-  <div class="honesty-note">
-    <b>Nota honesta:</b> corrección del prototipo: la integración mundo (x,z) es coherente con el morro en +Z (antes el vehículo avanzaba de lado). Implementa la estructura publicada de la Fórmula Mágica MF6.1 (deslizamiento puro, combinado, momento autoalineante, par de vuelco Mx, resistencia a la rodadura My, y los factores de escalado λ). <b>No es</b> el producto comercial "TNO MF-Tyre/MF-Swift" ni está certificado por TNO — esa certificación exige el software propietario de TNO/Siemens y su proceso de validación contra ensayos físicos en banco, que aquí no existen. Los presets de neumático son genéricos/ilustrativos por categoría (calle, deportivo, competición slick): los coeficientes reales de neumáticos de competición de fabricantes (Pirelli, Michelin, Hoosier, etc.) son datos propietarios no publicados, así que no se atribuyen a ningún modelo comercial concreto. Si tienes coeficientes de un ensayo TTC/Calspan real, pégalos en modo avanzado.
+<div class="honesty-note" id="honestyNote" data-i18n-html="honesty_note">
+    <b>Nota honesta:</b> contacto <b>Dahl + Stribeck + histéresis</b> (opción LuGre). Hold en rampa: si |F_motor − F_freno − F_g| &lt; μs·Fz, v y ω se quedan en 0. No hay división por velocidad cero. Coeficientes genéricos, no un ensayo de fabricante.
   </div>
 
   <div class="grid-main">
     <aside class="panel panel-controls">
       <div>
-        <div class="section-title">Estado del neumático</div>
+        <div class="section-title" data-i18n="title_estado">Estado del neumático</div>
         <div class="cg" style="margin-top:8px;">
-          <label>Carga vertical Fz <span class="v" id="valFz">4000</span> N</label>
+          <label for="sFz"><span data-i18n="lbl_sFz">Carga vertical Fz </span><span class="v" id="valFz">4000</span> N</label>
           <input type="range" id="sFz" min="500" max="10000" value="4000" step="50">
         </div>
         <div class="cg">
-          <label>Deslizamiento longitudinal κ <span class="v" id="valKappa">0.000</span></label>
+          <label for="sKappa"><span data-i18n="lbl_sKappa">Deslizamiento longitudinal κ </span><span class="v" id="valKappa">0.000</span></label>
           <input type="range" id="sKappa" min="-0.4" max="0.4" value="0" step="0.001">
         </div>
         <div class="cg">
-          <label>Ángulo de deriva α <span class="v" id="valAlpha">0.0</span>°</label>
+          <label for="sAlpha"><span data-i18n="lbl_sAlpha">Ángulo de deriva α </span><span class="v" id="valAlpha">0.0</span>°</label>
           <input type="range" id="sAlpha" min="-20" max="20" value="0" step="0.2">
         </div>
         <div class="cg">
-          <label>Ángulo de camber γ <span class="v" id="valGamma">0.0</span>°</label>
+          <label for="sGamma"><span data-i18n="lbl_sGamma">Ángulo de camber γ </span><span class="v" id="valGamma">0.0</span>°</label>
           <input type="range" id="sGamma" min="-10" max="10" value="0" step="0.5">
         </div>
         <div class="cg">
-          <label>Velocidad <span class="v" id="valSpeed">60</span> km/h</label>
+          <label for="sSpeed"><span data-i18n="lbl_sSpeed">Velocidad </span><span class="v" id="valSpeed">60</span> km/h</label>
           <input type="range" id="sSpeed" min="2" max="220" value="60" step="1">
         </div>
       </div>
@@ -197,31 +250,35 @@ textarea{min-height:160px;resize:vertical;}
           <span class="adv-toggle" id="advToggle"><input type="checkbox" id="advCheck">Modo avanzado (JSON, incluye λ)</span>
         </div>
         <div class="cg" style="margin-top:8px;">
-          <label>Preset de neumático (genérico, no comercial)</label>
+          <label for="presetSelect"><span data-i18n="lbl_presetSelect">Preset de neumático (genérico, no comercial)</span></label>
           <select id="presetSelect">
             <option value="street">Calle / turismo</option>
             <option value="sport">Deportivo / semi-slick</option>
             <option value="race">Competición / slick</option>
+            <option value="winter">Invierno</option>
+            <option value="rain">Lluvia</option>
+            <option value="offroad">Todoterreno</option>
+            <option value="truck">Camión / industrial</option>
           </select>
         </div>
         <div id="simplePanel" style="margin-top:8px; display:flex; flex-direction:column; gap:8px;">
-          <div class="cg"><label>μ pico (long./lat.) <span class="v" id="valMu">1.10</span></label>
+          <div class="cg"><label for="sMu"><span data-i18n="lbl_sMu">μ pico (long./lat.) </span><span class="v" id="valMu">1.10</span></label>
             <input type="range" id="sMu" min="0.4" max="1.6" value="1.10" step="0.01"></div>
-          <div class="cg"><label>Rigidez de deslizamiento (κ) <span class="v" id="valKx">1.00</span>x</label>
+          <div class="cg"><label for="sKx"><span data-i18n="lbl_sKx">Rigidez de deslizamiento (κ) </span><span class="v" id="valKx">1.00</span>x</label>
             <input type="range" id="sKx" min="0.3" max="2.0" value="1.00" step="0.05"></div>
-          <div class="cg"><label>Rigidez de deriva (α) <span class="v" id="valKy">1.00</span>x</label>
+          <div class="cg"><label for="sKy"><span data-i18n="lbl_sKy">Rigidez de deriva (α) </span><span class="v" id="valKy">1.00</span>x</label>
             <input type="range" id="sKy" min="0.3" max="2.0" value="1.00" step="0.05"></div>
-          <div class="cg"><label>Longitud de relajación σ <span class="v" id="valSigma">0.35</span> m</label>
+          <div class="cg"><label for="sSigma"><span data-i18n="lbl_sSigma">Longitud de relajación σ </span><span class="v" id="valSigma">0.35</span> m</label>
             <input type="range" id="sSigma" min="0.05" max="0.8" value="0.35" step="0.01"></div>
         </div>
         <div class="adv-panel" id="advPanel">
           <textarea id="coefJson" spellcheck="false"></textarea>
-          <button class="btn btn-secondary" id="btnApplyCoef">Aplicar coeficientes</button>
+          <button class="btn btn-secondary" id="btnApplyCoef" data-i18n="btn_btnApplyCoef">Aplicar coeficientes</button>
         </div>
       </div>
 
       <div>
-        <div class="section-title">Lecturas en tiempo real</div>
+        <div class="section-title" data-i18n="title_lecturas">Lecturas en tiempo real</div>
         <div class="stats-grid">
           <div class="stat"><div class="val fx" id="statFx">0.0</div><div class="lbl">Fx (N)</div></div>
           <div class="stat"><div class="val fy" id="statFy">0.0</div><div class="lbl">Fy (N)</div></div>
@@ -233,14 +290,14 @@ textarea{min-height:160px;resize:vertical;}
       </div>
 
       <div>
-        <div class="section-title">Controles</div>
+        <div class="section-title" data-i18n="title_controles">Controles</div>
         <div class="btn-row">
           <button class="btn btn-success" id="btnPause">⏸ Pausar</button>
-          <button class="btn btn-secondary" id="btnReset">↺ Reset</button>
+          <button class="btn btn-secondary" id="btnReset" data-i18n="btn_btnReset">↺ Reset</button>
         </div>
         <div class="btn-row" style="margin-top:8px;">
-          <button class="btn btn-primary" id="btnExport">📥 Exportar CSV</button>
-          <button class="btn btn-warning" id="btnSweep">📈 Barrido κ</button>
+          <button class="btn btn-primary" id="btnExport" data-i18n="btn_btnExport">📥 Exportar CSV</button>
+          <button class="btn btn-warning" id="btnSweep" data-i18n="btn_btnSweep">📈 Barrido κ</button>
         </div>
         <div class="btn-row" style="margin-top:8px;">
           <button class="btn btn-success" id="btnRecord">⏺ Grabar</button>
@@ -264,100 +321,239 @@ textarea{min-height:160px;resize:vertical;}
   </div>
 
   <div class="panel">
-    <div class="section-title">Simulación de vehículo — N ruedas dependientes entre sí (aparte de la rueda de detalle de arriba)</div>
+    <div class="section-title" data-i18n="title_vehiculo">Simulación de vehículo — N ruedas dependientes entre sí (aparte de la rueda de detalle de arriba)</div>
     <div style="font-size:12px; color:var(--text-secondary); line-height:1.5;">
       Cuerpo rígido plano (3 GDL: x, z, guiñada) con masa e inercia de guiñada, alimentado por las Fx/Fy/Mz reales de cada rueda. La carga vertical de cada rueda no es una fórmula fija de 4 esquinas: se resuelve como una plataforma rígida apoyada sobre N muelles (mínimos cuadrados sobre las 3 ecuaciones de equilibrio — peso total, momento de cabeceo, momento de vuelco), así que funciona igual de bien con 3 que con 10 ruedas. Cada rueda tiene su propia suspensión de 2º orden y su propio estado de relajación del neumático. <b>Simplificación asumida:</b> sin inercia rotacional de rueda ni motor/marchas (κ se ordena desde el pedal), sin barras estabilizadoras, sin cabeceo/balanceo como GDL propio (solo su efecto en el reparto de Fz). El chasis integra heave, cabeceo y balanceo (ángulos pequeños). κ sale de la inercia de rueda + motor/caja/diferencial (no se ordena desde el pedal). Barras por eje con par L/R. Dirección por trapecio plano (hardpoints genéricos, no un eje OEM). Sigue sin hop de rueda ni flexión de chasis.
     </div>
     <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px; margin-top:4px;">
-        <div class="cg"><label>Número de ruedas <span class="v" id="valNumWheels">4</span></label>
+        <div class="cg"><label for="vNumWheels"><span data-i18n="lbl_vNumWheels">Número de ruedas </span><span class="v" id="valNumWheels">4</span></label>
           <input type="range" id="vNumWheels" min="3" max="10" value="4" step="1"></div>
-        <div class="cg"><label>Masa vehículo <span class="v" id="valMass">1200</span> kg</label>
+        <div class="cg"><label for="vMass"><span data-i18n="lbl_vMass">Masa vehículo </span><span class="v" id="valMass">1200</span> kg</label>
           <input type="range" id="vMass" min="600" max="9000" value="1200" step="10"></div>
-        <div class="cg"><label>Distancia entre ejes <span class="v" id="valWB">2.60</span> m</label>
+        <div class="cg"><label for="vWB"><span data-i18n="lbl_vWB">Distancia entre ejes </span><span class="v" id="valWB">2.60</span> m</label>
           <input type="range" id="vWB" min="2.0" max="7.0" value="2.60" step="0.02"></div>
-        <div class="cg"><label>Ancho de vía <span class="v" id="valTrack">1.50</span> m</label>
+        <div class="cg"><label for="vTrack"><span data-i18n="lbl_vTrack">Ancho de vía </span><span class="v" id="valTrack">1.50</span> m</label>
           <input type="range" id="vTrack" min="1.2" max="2.6" value="1.50" step="0.02"></div>
-        <div class="cg"><label>Altura CDG <span class="v" id="valCG">0.50</span> m</label>
+        <div class="cg"><label for="vCG"><span data-i18n="lbl_vCG">Altura CDG </span><span class="v" id="valCG">0.50</span> m</label>
           <input type="range" id="vCG" min="0.25" max="1.20" value="0.50" step="0.01"></div>
-        <div class="cg"><label>Reparto peso delantero <span class="v" id="valWD">50</span> %</label>
+        <div class="cg"><label for="vWD"><span data-i18n="lbl_vWD">Reparto peso delantero </span><span class="v" id="valWD">50</span> %</label>
           <input type="range" id="vWD" min="30" max="70" value="50" step="1"></div>
-        <div class="cg"><label>Inercia de guiñada Iz <span class="v" id="valIz">1500</span> kg·m²</label>
+        <div class="cg"><label for="vIz"><span data-i18n="lbl_vIz">Inercia de guiñada Iz </span><span class="v" id="valIz">1500</span> kg·m²</label>
           <input type="range" id="vIz" min="500" max="12000" value="1500" step="50"></div>
-        <div class="cg"><label>Rigidez suspensión <span class="v" id="valSusK">35</span> kN/m</label>
+        <div class="cg"><label for="vSusK"><span data-i18n="lbl_vSusK">Rigidez suspensión </span><span class="v" id="valSusK">35</span> kN/m</label>
           <input type="range" id="vSusK" min="10" max="250" value="35" step="1"></div>
-        <div class="cg"><label>Amortiguación (ζ) <span class="v" id="valSusZ">0.65</span></label>
+        <div class="cg"><label for="vSusZ"><span data-i18n="lbl_vSusZ">Amortiguación (ζ) </span><span class="v" id="valSusZ">0.65</span></label>
           <input type="range" id="vSusZ" min="0.15" max="1.5" value="0.65" step="0.05"></div>
-        <div class="cg"><label>Ángulo máx. dirección <span class="v" id="valSteerMax">30</span>°</label>
+        <div class="cg"><label for="vModelMode"><span data-i18n="lbl_vModelMode">Modelo de chasis</span></label>
+          <select id="vModelMode">
+            <option value="6dof" selected>6DOF (heave/pitch/roll + hop + flex)</option>
+            <option value="3dof">3DOF (solo planta)</option>
+          </select></div>
+        <div class="cg"><label for="vUnsprung"><span data-i18n="lbl_vUnsprung">Masa no suspendida / rueda </span><span class="v" id="valUnsprung">40</span> kg</label>
+          <input type="range" id="vUnsprung" min="20" max="80" value="40" step="1"></div>
+        <div class="cg"><label for="vTireKz"><span data-i18n="lbl_vTireKz">Rigidez vertical neumático </span><span class="v" id="valTireKz">180</span> kN/m</label>
+          <input type="range" id="vTireKz" min="80" max="400" value="180" step="5"></div>
+        <div class="cg"><label for="vHopDamp"><span data-i18n="lbl_vHopDamp">Amort. hop (ζ) </span><span class="v" id="valHopDamp">0.30</span></label>
+          <input type="range" id="vHopDamp" min="0.05" max="0.80" value="0.30" step="0.01"></div>
+        <div class="cg"><label for="vFlex"><span data-i18n="lbl_vFlex">Rigidez torsión chasis </span><span class="v" id="valFlex">80</span> %</label>
+          <input type="range" id="vFlex" min="15" max="100" value="80" step="1"></div>
+        <div class="btn-row" style="margin-top:6px;">
+          <button class="btn btn-secondary" id="btnHopTest" data-i18n="btn_btnHopTest">Test hop</button>
+          <button class="btn btn-secondary" id="btnFlexTest" data-i18n="btn_btnFlexTest">Test flexión</button>
+        </div>
+        <div class="cg"><label for="vSteerMax"><span data-i18n="lbl_vSteerMax">Ángulo máx. dirección </span><span class="v" id="valSteerMax">30</span>°</label>
           <input type="range" id="vSteerMax" min="10" max="45" value="30" step="1"></div>
-        <div class="cg"><label>Factor α ejes no dir. <span class="v" id="valRearF">0.60</span></label>
+        <div class="cg"><label for="vRearF"><span data-i18n="lbl_vRearF">Factor α ejes no dir. </span><span class="v" id="valRearF">0.60</span></label>
           <input type="range" id="vRearF" min="0" max="1.2" value="0.60" step="0.05"></div>
-        <div class="cg"><label>Tren motriz</label>
+        <div class="cg"><label for="vDrivetrain"><span data-i18n="lbl_vDrivetrain">Tren motriz</span></label>
           <select id="vDrivetrain">
             <option value="REAR">Eje(s) trasero(s)</option>
             <option value="FRONT">Eje delantero</option>
             <option value="ALL">Todos los ejes</option>
           </select>
         </div>
-        <div class="cg"><label>Ix roll <span class="v" id="valIx">450</span></label>
+        <div class="cg"><label for="vIx"><span data-i18n="lbl_vIx">Ix roll </span><span class="v" id="valIx">450</span></label>
           <input type="range" id="vIx" min="80" max="4000" value="450" step="10"></div>
-        <div class="cg"><label>Iy pitch <span class="v" id="valIy">1300</span></label>
+        <div class="cg"><label for="vIy"><span data-i18n="lbl_vIy">Iy pitch </span><span class="v" id="valIy">1300</span></label>
           <input type="range" id="vIy" min="200" max="8000" value="1300" step="20"></div>
-        <div class="cg"><label>Inercia rueda Iw <span class="v" id="valIw">1.10</span></label>
+        <div class="cg"><label for="vIw"><span data-i18n="lbl_vIw">Inercia rueda Iw </span><span class="v" id="valIw">1.10</span></label>
           <input type="range" id="vIw" min="0.20" max="8" value="1.10" step="0.05"></div>
-        <div class="cg"><label>Barra ant. <span class="v" id="valArbF">8.0</span> kN/m</label>
+        <div class="cg"><label for="vArbF"><span data-i18n="lbl_vArbF">Barra ant. </span><span class="v" id="valArbF">8.0</span> kN/m</label>
           <input type="range" id="vArbF" min="0" max="40" value="8" step="0.5"></div>
-        <div class="cg"><label>Barra post. <span class="v" id="valArbR">5.0</span> kN/m</label>
+        <div class="cg"><label for="vArbR"><span data-i18n="lbl_vArbR">Barra post. </span><span class="v" id="valArbR">5.0</span> kN/m</label>
           <input type="range" id="vArbR" min="0" max="40" value="5" step="0.5"></div>
-        <div class="cg"><label>Motor Tmáx <span class="v" id="valTmax">220</span> N·m</label>
+        <div class="cg"><label for="vTmax"><span data-i18n="lbl_vTmax">Motor Tmáx </span><span class="v" id="valTmax">220</span> N·m</label>
           <input type="range" id="vTmax" min="60" max="900" value="220" step="10"></div>
-        <div class="cg"><label>Par máximo freno <span class="v" id="valTbr">900</span> N·m</label>
+        <div class="cg"><label for="vTbr"><span data-i18n="lbl_vTbr">Par máximo freno </span><span class="v" id="valTbr">900</span> N·m</label>
           <input type="range" id="vTbr" min="100" max="2500" value="900" step="25"></div>
-        <div class="cg"><label>Ackermann trapecio <span class="v" id="valAck">0</span> %</label>
+        <div class="cg"><label for="vAck"><span data-i18n="lbl_vAck">Ackermann trapecio </span><span class="v" id="valAck">0</span> %</label>
           <input type="range" id="vAck" min="0" max="120" value="0" step="5"></div>
-        <div class="cg"><label>Diferencial</label>
+        <div class="cg"><label for="vDiff"><span data-i18n="lbl_vDiff">Diferencial</span></label>
           <select id="vDiff">
             <option value="OPEN">Abierto</option>
             <option value="LSD">Autoblocante (LSD)</option>
             <option value="LOCKED">Bloqueado</option>
           </select>
         </div>
-        <div class="cg"><label>Cambio</label>
+        <div class="cg"><label for="vGearMode"><span data-i18n="lbl_vGearMode">Cambio</span></label>
           <select id="vGearMode">
             <option value="AUTO">Automático 5M</option>
             <option value="MANUAL">Manual (Q/E)</option>
           </select>
         </div>
+        <div class="cg"><label for="vSlopeL"><span data-i18n="lbl_vSlopeL">Pendiente LONG (subida + / bajada −) </span><span class="v" id="valSlopeL">0.0</span>°</label>
+          <input type="range" id="vSlopeL" min="-25" max="25" value="0" step="0.5"></div>
+        <div class="cg"><label for="vSlopeA"><span data-i18n="lbl_vSlopeA">Pendiente LAT (izq + / der −) </span><span class="v" id="valSlopeA">0.0</span>°</label>
+          <input type="range" id="vSlopeA" min="-20" max="20" value="0" step="0.5"></div>
+        <div class="cg"><label for="vThrS"><span data-i18n="lbl_vThrS">Acelerador (rampa) </span><span class="v" id="valThrS">0</span>%</label>
+          <input type="range" id="vThrS" min="0" max="100" value="0" step="1"></div>
+        <div class="cg"><label for="vBrkS"><span data-i18n="lbl_vBrkS">Freno (rampa) </span><span class="v" id="valBrkS">0</span>%</label>
+          <input type="range" id="vBrkS" min="0" max="100" value="0" step="1"></div>
+        <div class="cg"><label for="vMuS"><span data-i18n="lbl_vMuS">μ estática </span><span class="v" id="valMuS">1.00</span></label>
+          <input type="range" id="vMuS" min="0.20" max="2.00" value="1.00" step="0.05"></div>
+        <div class="cg"><label for="vMuD"><span data-i18n="lbl_vMuD">μ dinámica </span><span class="v" id="valMuD">0.85</span></label>
+          <input type="range" id="vMuD" min="0.10" max="1.80" value="0.85" step="0.05"></div>
+        <div class="cg"><label for="vVs"><span data-i18n="lbl_vVs">Vel. Stribeck </span><span class="v" id="valVs">0.050</span> m/s</label>
+          <input type="range" id="vVs" min="0.01" max="0.40" value="0.05" step="0.005"></div>
+        <div class="cg"><label for="vContact"><span data-i18n="lbl_vContact">Modelo de contacto</span></label>
+          <select id="vContact">
+            <option value="dahl">Dahl + Stribeck (recomendado)</option>
+            <option value="lugre">LuGre dinámico</option>
+            <option value="brush">Brush / cerda</option>
+            <option value="coulomb">Coulomb suavizado</option>
+          </select>
+        </div>
+        <div class="cg"><label for="vSurface"><span data-i18n="lbl_vSurface">Superficie</span></label>
+          <select id="vSurface">
+            <option value="dry">🟡 Asfalto seco μs=1.00</option>
+            <option value="wet">🔵 Mojado μs=0.70</option>
+            <option value="snow">⚪ Nieve μs=0.35</option>
+            <option value="ice">🔷 Hielo μs=0.12</option>
+          </select>
+        </div>
+        <div class="cg"><label for="vTamb"><span data-i18n="lbl_vTamb">T ambiente </span><span class="v" id="valTamb">25</span>°C</label>
+          <input type="range" id="vTamb" min="-10" max="45" value="25" step="1"></div>
+        <div class="cg"><label for="vCd"><span data-i18n="lbl_vCd">Cd aero </span><span class="v" id="valCd">0.32</span></label>
+          <input type="range" id="vCd" min="0.20" max="0.80" value="0.32" step="0.01"></div>
+        <div class="cg"><label for="vArea"><span data-i18n="lbl_vArea">Área frontal </span><span class="v" id="valArea">2.2</span> m²</label>
+          <input type="range" id="vArea" min="1.5" max="4.0" value="2.2" step="0.1"></div>
+        <div class="cg"><label for="vDF"><span data-i18n="lbl_vDF">Downforce </span><span class="v" id="valDF">100</span>%</label>
+          <input type="range" id="vDF" min="0" max="250" value="100" step="5"></div>
+        <div class="cg"><label for="vReg"><span data-i18n="lbl_vReg">Freno regen </span><span class="v" id="valReg">0</span>%</label>
+          <input type="range" id="vReg" min="0" max="100" value="0" step="5"></div>
+        <div class="cg"><label for="vBumpOn"><span data-i18n="lbl_vBumpOn">Baches </span><span class="v" id="valBumpOn">off</span></label>
+          <select id="vBumpOn"><option value="0">Off</option><option value="1">On</option></select></div>
+        <div class="cg"><label for="vBumpD"><span data-i18n="lbl_vBumpD">Prof. bache </span><span class="v" id="valBumpD">4.0</span> cm</label>
+          <input type="range" id="vBumpD" min="0" max="12" value="4" step="0.5"></div>
+        <div class="cg"><label for="vBumpF"><span data-i18n="lbl_vBumpF">Freq. baches </span><span class="v" id="valBumpF">0.8</span> 1/m</label>
+          <input type="range" id="vBumpF" min="0.2" max="2.5" value="0.8" step="0.1"></div>
+        <div class="cg"><label for="vEpsA"><span data-i18n="lbl_vEpsA">EPS asistencia </span><span class="v" id="valEpsA">70</span>%</label>
+          <input type="range" id="vEpsA" min="0" max="100" value="70" step="5"></div>
+        <div class="cg"><label for="vEpsR"><span data-i18n="lbl_vEpsR">EPS retorno </span><span class="v" id="valEpsR">55</span>%</label>
+          <input type="range" id="vEpsR" min="0" max="100" value="55" step="5"></div>
+        <div class="cg"><label for="vColOn"><span data-i18n="lbl_vColOn">Colisiones </span><span class="v" id="valColOn">off</span></label>
+          <select id="vColOn"><option value="0">Off</option><option value="1">On</option></select></div>
+        <div class="cg"><label for="vWall"><span data-i18n="lbl_vWall">Muro a </span><span class="v" id="valWall">18</span> m</label>
+          <input type="range" id="vWall" min="6" max="60" value="18" step="1"></div>
+        <div class="cg"><label for="vRest"><span data-i18n="lbl_vRest">Restitución </span><span class="v" id="valRest">0.28</span></label>
+          <input type="range" id="vRest" min="0.05" max="0.80" value="0.28" step="0.01"></div>
+        <div class="cg"><label for="vClutch"><span data-i18n="lbl_vClutch">Embrague </span><span class="v" id="valClutch">100</span>%</label>
+          <input type="range" id="vClutch" min="0" max="100" value="100" step="5"></div>
+        <div class="cg"><label for="vAccOn"><span data-i18n="lbl_vAccOn">ACC </span><span class="v" id="valAccOn">off</span></label>
+          <select id="vAccOn"><option value="0">Off</option><option value="1">On</option></select></div>
+        <div class="cg"><label for="vAccV"><span data-i18n="lbl_vAccV">ACC velocidad </span><span class="v" id="valAccV">80</span> km/h</label>
+          <input type="range" id="vAccV" min="20" max="160" value="80" step="5"></div>
+        <div class="cg"><label for="vAccGap"><span data-i18n="lbl_vAccGap">ACC hueco</span></label>
+          <select id="vAccGap"><option value="1">Corto</option><option value="2" selected>Medio</option><option value="3">Largo</option></select></div>
+        <div class="cg"><label for="vLkaOn"><span data-i18n="lbl_vLkaOn">LKA </span><span class="v" id="valLkaOn">off</span></label>
+          <select id="vLkaOn"><option value="0">Off</option><option value="1">On</option></select></div>
+        <div class="cg"><label for="vLkaG"><span data-i18n="lbl_vLkaG">LKA ganancia </span><span class="v" id="valLkaG">70</span>%</label>
+          <input type="range" id="vLkaG" min="0" max="100" value="70" step="5"></div>
+        <div class="cg"><label for="vAebOn"><span data-i18n="lbl_vAebOn">AEB </span><span class="v" id="valAebOn">off</span></label>
+          <select id="vAebOn"><option value="0">Off</option><option value="1">On</option></select></div>
+        <div class="cg"><label for="vAebT"><span data-i18n="lbl_vAebT">AEB TTC </span><span class="v" id="valAebT">1.4</span> s</label>
+          <input type="range" id="vAebT" min="0.6" max="2.5" value="1.4" step="0.1"></div>
+        <div class="cg"><label for="vLead"><span data-i18n="lbl_vLead">Coche delante a </span><span class="v" id="valLead">40</span> m</label>
+          <input type="range" id="vLead" min="8" max="80" value="40" step="1"></div>
+        <div class="cg"><label for="vAbs"><span data-i18n="lbl_vAbs">ABS ganancia </span><span class="v" id="valAbs">100</span>%</label>
+          <input type="range" id="vAbs" min="0" max="100" value="100" step="1"></div>
+        <div class="cg"><label for="vTcs"><span data-i18n="lbl_vTcs">TCS ganancia </span><span class="v" id="valTcs">100</span>%</label>
+          <input type="range" id="vTcs" min="0" max="100" value="100" step="1"></div>
     </div>
 
-    <div class="section-title" style="margin-top:10px;">Rueda y llanta</div>
+    <div class="section-title" style="margin-top:10px;" data-i18n="title_rueda_llanta">Rueda y llanta</div>
     <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px;">
-        <div class="cg"><label>Diámetro de llanta <span class="v" id="valRimD">17</span>"</label>
+        <div class="cg"><label for="vRimD"><span data-i18n="lbl_vRimD">Diámetro de llanta </span><span class="v" id="valRimD">17</span>"</label>
           <input type="range" id="vRimD" min="13" max="22" value="17" step="1"></div>
-        <div class="cg"><label>Ancho de neumático <span class="v" id="valTireW">215</span> mm</label>
+        <div class="cg"><label for="vTireW"><span data-i18n="lbl_vTireW">Ancho de neumático </span><span class="v" id="valTireW">215</span> mm</label>
           <input type="range" id="vTireW" min="145" max="335" value="215" step="5"></div>
-        <div class="cg"><label>Perfil (altura/ancho) <span class="v" id="valProfile">45</span> %</label>
+        <div class="cg"><label for="vProfile"><span data-i18n="lbl_vProfile">Perfil (altura/ancho) </span><span class="v" id="valProfile">45</span> %</label>
           <input type="range" id="vProfile" min="25" max="80" value="45" step="1"></div>
+        <div class="cg"><label for="vTireType"><span data-i18n="lbl_vTireType">Tipo de neumático</span></label>
+          <select id="vTireType">
+            <option value="street">Calle / turismo</option>
+            <option value="sport">Deportivo / semi-slick</option>
+            <option value="race">Slick / competición</option>
+            <option value="winter">Invierno</option>
+            <option value="rain">Lluvia</option>
+            <option value="offroad">Todoterreno</option>
+            <option value="truck">Camión / industrial</option>
+          </select>
+        </div>
+        <div class="cg"><label for="vRimStyle"><span data-i18n="lbl_vRimStyle">Tipo de llanta</span></label>
+          <select id="vRimStyle">
+            <option value="spoke5">5 radios</option>
+            <option value="spoke8">8 radios</option>
+            <option value="mesh">Malla (multi-radio)</option>
+            <option value="classic4">Clásica 4 radios</option>
+            <option value="offroad">Todoterreno / beadlock</option>
+          </select>
+        </div>
+        <div class="cg"><label for="vCapStyle"><span data-i18n="lbl_vCapStyle">Tapacubos</span></label>
+          <select id="vCapStyle">
+            <option value="none">Ninguno (llanta vista)</option>
+            <option value="dish">Liso / disco</option>
+            <option value="radial">12 rayos</option>
+            <option value="convex">Convexo clásico</option>
+            <option value="centerlock">Tuerca central</option>
+          </select>
+        </div>
     </div>
     <div style="font-size:11px; color:var(--text-secondary); line-height:1.5;">
-      El radio efectivo R0 (usado por la Fórmula Mágica) se recalcula a partir de estos tres — llanta más grande o perfil más bajo → menos flanco → menor longitud de relajación σ (dirección más directa). Es un acoplamiento honesto pero simplificado, no un modelo de rigidez de flanco real.
+      R0 y σ salen de llanta + perfil. El <b>tipo de neumático</b> cambia coeficientes genéricos (μ, rigideces, σ) y el dibujo 3D; no son datos de un fabricante. Llanta y tapacubos son solo visuales (salvo que el tapacubos tape los radios).
     </div>
 
     <div class="btn-row" style="margin-top:10px;">
       <button class="btn btn-success" id="btnVehicleRun" style="padding:12px;">▶ Arrancar coche</button>
-      <button class="btn btn-secondary" id="btnResetCar2" style="padding:12px;">↺ Reset posición</button>
+      <button class="btn btn-secondary" id="btnResetCar2" style="padding:12px;" data-i18n="btn_btnResetCar2">↺ Reset posición</button>
       <button class="btn btn-secondary" id="btnCameraMode" style="padding:12px;">🎥 Cámara: persecución</button>
     </div>
-    <div class="section-title" style="margin-top:12px;">Ayudas visuales 3D (no son física)</div>
+    <div class="btn-row" style="margin-top:8px;">
+      <button class="btn btn-secondary" id="btnSlopeUp" style="padding:10px;" data-i18n="btn_btnSlopeUp">⛰️ Subida 10°</button>
+      <button class="btn btn-secondary" id="btnSlopeDown" style="padding:10px;" data-i18n="btn_btnSlopeDown">⬇️ Bajada 10°</button>
+      <button class="btn btn-secondary" id="btnSlopeLat" style="padding:10px;" data-i18n="btn_btnSlopeLat">↔️ Lateral 8°</button>
+      <button class="btn btn-warning" id="btnHillHold" style="padding:10px;" data-i18n="btn_btnHillHold">🛑 Hold rampa</button>
+    </div>
+    <div class="btn-row" style="margin-top:8px;">
+      <button class="btn btn-danger" id="btnAbsTest" style="padding:10px;" data-i18n="btn_btnAbsTest">🛑 Test ABS</button>
+      <button class="btn btn-success" id="btnTcsTest" style="padding:10px;" data-i18n="btn_btnTcsTest">⚡ Test TCS</button>
+      <button class="btn btn-secondary" id="btnAbsTcsOff" style="padding:10px;" data-i18n="btn_btnAbsTcsOff">ABS/TCS off</button>
+      <button class="btn btn-secondary" id="btnIceTest" style="padding:10px;" data-i18n="btn_btnIceTest">🔷 Test hielo</button>
+      <button class="btn btn-secondary" id="btnBumpTest" style="padding:10px;" data-i18n="btn_btnBumpTest">🕳️ Test baches</button>
+      <button class="btn btn-danger" id="btnColTest" style="padding:10px;" data-i18n="btn_btnColTest">💥 Test choque</button>
+      <button class="btn btn-success" id="btnAdasTest" style="padding:10px;" data-i18n="btn_btnAdasTest">ADAS test</button>
+    </div>
+    <div class="section-title" style="margin-top:12px;" data-i18n="title_ayudas_3d">Ayudas visuales 3D (no son física)</div>
     <div style="display:flex; flex-wrap:wrap; gap:10px 16px; font-size:12px; color:var(--text-secondary); margin-top:6px;">
       <label class="adv-toggle" style="cursor:pointer;"><input type="checkbox" id="vizMarks" checked> Marca amarilla de giro</label>
-      <label class="adv-toggle" style="cursor:pointer;"><input type="checkbox" id="vizArrow" checked> Flecha cian de Fy</label>
-      <label class="adv-toggle" style="cursor:pointer;"><input type="checkbox" id="vizHub" checked> Buje cian</label>
+      <label class="adv-toggle" style="cursor:pointer;"><input type="checkbox" id="vizArrow" checked> Flecha ámbar de Fy</label>
+      <label class="adv-toggle" style="cursor:pointer;"><input type="checkbox" id="vizHub" checked> Buje ámbar</label>
     </div>
     <div style="font-size:11px; color:var(--text-secondary); line-height:1.55; margin-top:6px; padding:8px 10px; border:1px solid var(--border-color); border-radius:8px; background:var(--bg-input);">
-      <b>Nota.</b> Estos objetos solo existen en la escena 3D. No entran en Pacejka ni en el integrador del chasis.
+      <b>Nota.</b> Estos objetos solo existen en la escena 3D. No entran en el contacto ni en el integrador del chasis.
       <b style="color:#ffe14a;">Amarillo:</b> marca en la banda para leer la rotación (un neumático liso es de revolución y de perfil no se ve girar).
-      <b style="color:#00d4ff;">Flecha cian:</b> longitud proporcional a la fuerza lateral Fy calculada.
-      <b style="color:#00d4ff;">Buje cian:</b> pieza decorativa del centro de la llanta, para distinguir goma y metal.
+      <b style="color:#e8a54b;">Flecha ámbar:</b> longitud proporcional a la fuerza lateral Fy calculada.
+      <b style="color:#e8a54b;">Buje ámbar:</b> pieza decorativa del centro de la llanta, para distinguir goma y metal.
     </div>
 
     <div style="font-size:11px; color:var(--text-secondary); line-height:1.5;">
@@ -369,13 +565,42 @@ textarea{min-height:160px;resize:vertical;}
       </div>
     </div>
     <div class="btn-row" style="margin-top:8px;">
-      <button class="btn btn-success" id="btnThrottle" style="padding:20px; font-size:14px; touch-action:none;">🏎️ ACELERAR</button>
-      <button class="btn btn-warning" id="btnBrake" style="padding:20px; font-size:14px; touch-action:none;">🛑 FRENAR</button>
+      <button class="btn btn-success" id="btnThrottle" style="padding:20px; font-size:14px; touch-action:none;" data-i18n="btn_btnThrottle">🏎️ ACELERAR</button>
+      <button class="btn btn-warning" id="btnBrake" style="padding:20px; font-size:14px; touch-action:none;" data-i18n="btn_btnBrake">🛑 FRENAR</button>
     </div>
 
     <div class="canvas3d" style="height:640px; margin-top:12px;">
       <div id="three-canvas-4w"></div>
       <div class="overlay" id="carOverlay">v=0.0 km/h · ax=0.00g · ay=0.00g</div>
+    </div>
+    <div class="tele-wrap">
+      <div>
+        <div class="section-title" data-i18n="sec_tele">Telemetría + GPS</div>
+        <div class="tele-grid">
+          <div class="tele-item"><div class="tv" id="telV">0.0</div><div class="tl">km/h</div></div>
+          <div class="tele-item"><div class="tv" id="telRpm">0</div><div class="tl">rpm</div></div>
+          <div class="tele-item"><div class="tv" id="telGear">1</div><div class="tl" data-i18n="tl_gear">marcha</div></div>
+          <div class="tele-item"><div class="tv" id="telTtc">—</div><div class="tl">TTC s</div></div>
+          <div class="tele-item"><div class="tv" id="telLat">40.416800</div><div class="tl">lat</div></div>
+          <div class="tele-item"><div class="tv" id="telLon">-3.703800</div><div class="tl">lon</div></div>
+          <div class="tele-item"><div class="tv" id="telHdg">0</div><div class="tl" data-i18n="tl_hdg">rumbo °</div></div>
+          <div class="tele-item"><div class="tv" id="telAlt">650</div><div class="tl">alt m</div></div>
+        </div>
+        <div class="gps-wrap"><canvas id="gpsMap"></canvas></div>
+      </div>
+      <div>
+        <div class="section-title" data-i18n="sec_traf">Tráfico</div>
+        <div class="cg"><label for="vTrafN"><span data-i18n="traf_n">N.º coches</span> <span class="v" id="valTrafN">0</span></label>
+          <input type="range" id="vTrafN" min="0" max="10" value="0" step="1"></div>
+        <div class="cg"><label for="vTrafV"><span data-i18n="traf_v">Vel. tráfico</span> <span class="v" id="valTrafV">50</span> km/h</label>
+          <input type="range" id="vTrafV" min="20" max="120" value="50" step="5"></div>
+        <div class="btn-row three" style="margin-top:6px;">
+          <button class="btn btn-secondary" id="btnTrafAdd" data-i18n="traf_add">+ coche</button>
+          <button class="btn btn-secondary" id="btnTrafClr" data-i18n="traf_clr">Vaciar</button>
+          <button class="btn btn-warning" id="btnTrafTest" data-i18n="traf_test">Test tráfico</button>
+        </div>
+        <div class="traffic-list" id="trafficList"></div>
+      </div>
     </div>
     <div class="stats-grid" id="wheelReadout" style="grid-template-columns:repeat(auto-fill,minmax(110px,1fr)); margin-top:12px; font-size:11px;">
     </div>
@@ -383,8 +608,8 @@ textarea{min-height:160px;resize:vertical;}
 
 
   <footer class="footer">
-    <div><strong>TireSim Pro</strong> — MF6.1 + chasis 6 GDL planos/ángulo pequeño, Iw, motor/caja/diff, barras, trapecio</div>
-    <div class="badge">Pacejka, H.B. — Tyre and Vehicle Dynamics</div>
+    <div><strong>TireSim Pro</strong> — cerda Dahl–Stribeck, chasis, motor/caja, ABS/TCS, ADAS, tráfico</div>
+    <div class="badge">Modelo de cerda · uso educativo</div>
   </footer>
 </div>
 
@@ -392,9 +617,10 @@ textarea{min-height:160px;resize:vertical;}
 
 <script>
 "use strict";
+"use strict";
 
 /* ============================================================
-   MODELO DE NEUMÁTICO — Fórmula Mágica de Pacejka (MF), estructura
+   MODELO DE NEUMÁTICO — contacto de cerda (Dahl/Stribeck). Comentarios históricos:
    estándar: deslizamiento puro (Fx0, Fy0), deslizamiento combinado
    por funciones de ponderación (Gxa, Gyk), momento autoalineante
    (rastro neumático + par residual) y dinámica de relajación de
@@ -425,12 +651,12 @@ function defaultCoefs() {
     qCz1: 1.1, qDz1: 0.12, qDz2: -0.01, qDz3: 0.0, qDz4: 0.0, qDz6: 0.0,
     qEz1: -1.0, qEz2: 0.0, qEz3: 0.0, qEz4: 0.2, qEz5: 0.0,
     qHz1: 0.0, qHz2: 0.0, qHz3: 0.0, qHz4: 0.0,
-    // Par de vuelco Mx (simplificado) y resistencia a la rodadura My (MF6.1)
+    // Par de vuelco Mx (simplificado) y resistencia a la rodadura My
     qsx1: 0.0, qsx2: 0.6, qsx3: 0.0,
     qsy1: 0.012, qsy2: 0.0,
     // Longitud de relajación base (m) a Fz0 — escala con carga
     sigmaKappa0: 0.35, sigmaAlpha0: 0.35,
-    // Factores de escalado λ (estructura MF6.1) — 1.0 = sin corrección, tal como vienen de p/q/r
+    // Factores de escalado λ — 1.0 = sin corrección, tal como vienen de p/q/r
     lambda_mux: 1.0, lambda_muy: 1.0,
     lambda_Kxk: 1.0, lambda_Kya: 1.0,
     lambda_Cx: 1.0, lambda_Cy: 1.0,
@@ -463,7 +689,23 @@ function tirePresets(){
   race.pCy1 = 1.45; race.sigmaKappa0 = 0.16; race.sigmaAlpha0 = 0.16; race.R0 = 0.30;
   race.qsy1 = 0.008;
 
-  return { street: street, sport: sport, race: race };
+  var winter = JSON.parse(JSON.stringify(base));
+  winter.pDx1 = 0.95; winter.pDy1 = 0.92; winter.pKx1 = 16.0; winter.pKy1 = -14.0;
+  winter.sigmaKappa0 = 0.42; winter.sigmaAlpha0 = 0.42; winter.qsy1 = 0.016;
+
+  var rain = JSON.parse(JSON.stringify(base));
+  rain.pDx1 = 1.00; rain.pDy1 = 0.98; rain.pKx1 = 18.0; rain.pKy1 = -16.0;
+  rain.sigmaKappa0 = 0.38; rain.sigmaAlpha0 = 0.38;
+
+  var offroad = JSON.parse(JSON.stringify(base));
+  offroad.pDx1 = 0.88; offroad.pDy1 = 0.85; offroad.pKx1 = 14.0; offroad.pKy1 = -12.5;
+  offroad.sigmaKappa0 = 0.50; offroad.sigmaAlpha0 = 0.50; offroad.qsy1 = 0.02; offroad.R0 = 0.36;
+
+  var truck = JSON.parse(JSON.stringify(base));
+  truck.Fz0 = 6000; truck.pDx1 = 0.80; truck.pDy1 = 0.78; truck.pKx1 = 15.0; truck.pKy1 = -13.0;
+  truck.sigmaKappa0 = 0.45; truck.sigmaAlpha0 = 0.45; truck.qsy1 = 0.018; truck.R0 = 0.50;
+
+  return { street: street, sport: sport, race: race, winter: winter, rain: rain, offroad: offroad, truck: truck };
 }
 
 function sign(x){ return x < 0 ? -1 : (x > 0 ? 1 : 0); }
@@ -474,7 +716,7 @@ function TireModel(coefs){
   this.FxAct = 0; this.FyAct = 0;
 }
 
-// Deslizamiento puro longitudinal: devuelve Fx0 (con factores de escalado λ, MF6.1)
+// Deslizamiento puro longitudinal: devuelve Fx0 (con factores de escalado λ)
 TireModel.prototype.pureFx = function(kappa, Fz, gamma){
   var c = this.c;
   var dfz = (Fz - c.Fz0) / c.Fz0;
@@ -492,7 +734,7 @@ TireModel.prototype.pureFx = function(kappa, Fz, gamma){
   return { Fx0: Fx0, Bx: Bx, Cx: Cx, Dx: Dx, Ex: Ex, SHx: SHx };
 };
 
-// Deslizamiento puro lateral: devuelve Fy0 (con factores de escalado λ, MF6.1)
+// Deslizamiento puro lateral: devuelve Fy0 (con factores de escalado λ)
 TireModel.prototype.pureFy = function(alpha, Fz, gamma){
   var c = this.c;
   var dfz = (Fz - c.Fz0) / c.Fz0;
@@ -525,7 +767,7 @@ TireModel.prototype.rollingResistance = function(Fz, Fx){
   return -Math.abs(My) * sign(1); // par que se opone al giro
 };
 
-// Deslizamiento combinado: pondera Fx0 y Fy0 mediante Gxa / Gyk (estructura estándar Pacejka)
+// Deslizamiento combinado: pondera Fx0 y Fy0 mediante Gxa / Gyk (ponderación combinada)
 TireModel.prototype.combined = function(kappa, alpha, Fz, gamma){
   var c = this.c;
   var dfz = (Fz - c.Fz0) / c.Fz0;
@@ -600,12 +842,29 @@ function currentAlphaRad(){ return state.alpha * Math.PI/180; }
 
 function stepPhysics(dt){
   var Fz = state.Fz;
+  var vx = state.speed/3.6;
+  var alphaRad = currentAlphaRad();
+  var R0b = Math.max(0.08, coefs.R0 || 0.315);
+  // Banco: vsx, vsy desde velocidad de cubo y sliders. A v=0 no hay división.
+  var omegaB = (Math.abs(vx) < 1e-4) ? (state.kappa * 8) : ((1 + state.kappa) * vx / R0b);
+  var vsx = vx - omegaB * R0b;
+  var vsy = vx * Math.tan(alphaRad);
+  var res = stepWheel(tire, vsx, vsy, Fz, dt, '_bench');
+  var Fx0steady = res.Fx, Fy0steady = res.Fy;
+  tire.FxAct = res.Fx; tire.FyAct = res.Fy;
+  var Mz = -0.04 * res.Fy;
+  var Mx = 0, My = -0.012 * Fz * R0b;
+  state.Fx = res.Fx; state.Fy = res.Fy; state.Mz = Mz; state.Mx = Mx; state.My = My;
+  state.mu = Fz !== 0 ? Math.hypot(res.Fx, res.Fy)/Fz : 0;
+  return { Fx0steady: Fx0steady, Fy0steady: Fy0steady };
+}
+function stepPhysics_UNUSED_OLD(dt){
+  var Fz = state.Fz;
   var kappa = state.kappa;
   var alphaRad = currentAlphaRad();
   var gammaRad = currentGammaRad();
-  var v = Math.max(state.speed/3.6, 0.3); // m/s, evita división por cero a v=0
-
-  var res = tire.combined(kappa, alphaRad, Fz, gammaRad);
+  var v = Math.max(state.speed/3.6, 0.3);
+  var res = { Fx:0, Fy:0 };
 
   // Círculo de fricción (limita la resultante a mu_max * Fz)
   var muMax = coefs.muScale * 1.15;
@@ -751,7 +1010,7 @@ function initCharts(){
   charts.fx.data.datasets.push({ label:'Fx combinado', data:[], backgroundColor:'#ff9100', borderColor:'#ff9100', pointRadius:1.5, showLine:true, borderWidth:1.5 });
 
   charts.fy = new Chart(document.getElementById('chartFy'), common('α (°)','Fy (N)','#4ecdc4','Fy0 puro'));
-  charts.fy.data.datasets.push({ label:'Fy combinado', data:[], backgroundColor:'#00d4ff', borderColor:'#00d4ff', pointRadius:1.5, showLine:true, borderWidth:1.5 });
+  charts.fy.data.datasets.push({ label:'Fy combinado', data:[], backgroundColor:'#e8a54b', borderColor:'#e8a54b', pointRadius:1.5, showLine:true, borderWidth:1.5 });
 
   charts.circle = new Chart(document.getElementById('chartCircle'), common('Fx (N)','Fy (N)','#ffd93d','Trayectoria Fx-Fy'));
 
@@ -896,7 +1155,7 @@ function initScene(){
   // aunque el ángulo se calcule bien.
   var hub = new THREE.Mesh(
     new THREE.CylinderGeometry(0.05,0.05,0.16,16),
-    new THREE.MeshStandardMaterial({ color:0x00d4ff, roughness:0.3, metalness:0.7, emissive:0x00d4ff, emissiveIntensity:0.25 })
+    new THREE.MeshStandardMaterial({ color:0xe8a54b, roughness:0.3, metalness:0.7, emissive:0xe8a54b, emissiveIntensity:0.25 })
   );
   hub.rotation.x = Math.PI/2;
   spinGroupDetail.add(hub);
@@ -909,7 +1168,7 @@ function initScene(){
 
   arrowFx = createArrow(0xff6b6b);
   arrowFy = createArrow(0x4ecdc4);
-  arrowFz = createArrow(0x00d4ff);
+  arrowFz = createArrow(0xe8a54b);
   arrowFx.position.set(0,0,0.5);
   arrowFy.position.set(0,0,0.5);
   arrowFz.position.set(0,0.6,0);
@@ -978,15 +1237,54 @@ var vehicle = {
   drivetrain: 'REAR',
   numWheels: 4,
   rimDiameterIn: 17, tireWidthMm: 215, profilePct: 45,
-  Ix: 450, Iy: 1300, Iw: 1.1,
+  tireType: 'street', rimStyle: 'spoke5', capStyle: 'none',
+  Ix: 1800, Iy: 2200, Iw: 1.1,
   arbFront: 8000, arbRear: 5000,
+  unsprung: 40, tireKz: 180000, hopDamp: 0.30,
+  chassisTorsion: 0.80, modelMode: '6dof',
+  gearRatios: [0, 3.50, 2.20, 1.52, 1.15, 0.87, 0.70],
   engTmax: 220, engRedline: 6500, engIdle: 850, engEff: 0.90,
   finalDrive: 3.7, gear: 1, gearMode: 'AUTO',
-  gearRatios: [0, 3.50, 2.20, 1.52, 1.15, 0.87],
   diffMode: 'OPEN', lsdC: 70, Tbrake: 900,
   ackArm: 0.18, ackTie: 0.52, ackPercent: 0, ackRack: 0.16,
-  omegaE: 90
+  omegaE: 90, revRatio: 3.2,
+  slopeLongDeg: 0, slopeLatDeg: 0,
+  muStatic: 1.00, muDynamic: 0.85,
+  contactK: 150000, contactC: 900, contactModel: 'dahl', stribeckSpeed: 0.05,
+  absOn: true, tcsOn: true, absGain: 2.5, tcsGain: 3.0,
+  absTarget: 0.15, tcsLimit: 0.12,
+  surface: 'dry',
+  ambientTemp: 25, Cd: 0.32, area: 2.2, downforcePct: 100, regenPct: 0,
+  bumpsOn: false, bumpDepth: 0.04, bumpFreq: 0.8, bumpAsym: 0.4,
+  epsOn: true, epsAssist: 0.7, epsReturn: 0.55,
+  collisionsOn: false, obstacleDist: 18, chassisK: 280000, restitution: 0.28, obstacleHard: 0.55,
+  clutch: 1, plasticDef: 0,
+  accOn: false, accKph: 80, accGap: 2,
+  lkaOn: false, lkaGain: 0.7,
+  aebOn: false, aebTtc: 1.4, leadDist: 40, leadSpeed: 12,
+  gpsLat0: 40.4168, gpsLon0: -3.7038, gpsAlt0: 650,
+  trafficN: 0, trafficKph: 50
 };
+var traffic = [];
+var trafficMeshes = [];
+var gpsState = { lat:40.4168, lon:-3.7038, alt:650, hdg:0 };
+var SURFACE = {
+  dry:  { muS:1.00, muD:0.85, label:'Asfalto seco' },
+  wet:  { muS:0.70, muD:0.55, label:'Asfalto mojado' },
+  snow: { muS:0.35, muD:0.30, label:'Nieve' },
+  ice:  { muS:0.12, muD:0.08, label:'Hielo' }
+};
+var absCtl = { active:false };
+var tcsCtl = { active:false };
+var wheelCtl = {};
+function getWheelCtl(id){
+  if (!wheelCtl[id]) wheelCtl[id] = {
+    abs:{ integral:0, phase:0, active:false },
+    tcs:{ integral:0, active:false, cut:0 }
+  };
+  return wheelCtl[id];
+}
+var lastAbsActive = false, lastTcsActive = false;
 
 // Construye la disposición de N ruedas por ejes: si N es impar, el
 // primer eje lleva una única rueda centrada (tipo triciclo); el resto
@@ -1042,13 +1340,15 @@ function computeWheelGeometry(){
   coefs.sigmaAlpha0 = 0.35*ratio;
 }
 
-var chassis = { x:0, z:0, psi:0, u:0, w:0, r:0, zS:0, theta:0, phi:0, zSdot:0, thetaDot:0, phiDot:0 };
+var chassis = { x:0, z:0, psi:0, u:0, w:0, r:0, zS:0, theta:0, phi:0, zSdot:0, thetaDot:0, phiDot:0, torsion:0, torsionDot:0 };
+var wheelHop = {};
 var wheelOmega = {};
 var controls = { throttle:0, brake:0, steerRad:0, steerTarget:0 };
 var touchControls = { throttle:0, brake:0, steer:0 };
 var vehicleRunning = false;
 var cameraMode = 'chase'; // 'chase' | 'fixed'
 var fixedCamReady = false;
+var cam4wOrbit = { theta: 0.45, phi: 1.05, radius: 8 };
 var vizAids = { marks: true, arrow: true, hub: true };
 
 function applyVizAids(){
@@ -1117,19 +1417,286 @@ function stepSuspensionCorner(corner, target, cornerMass, dt){
   return corner.Fz;
 }
 
-function stepWheel(tireObj, kappa, alphaRad, Fz, gammaRad, v, dt){
-  var res = tireObj.combined(kappa, alphaRad, Fz, gammaRad);
-  var Fmax = coefs.muScale*1.15*Fz;
-  var Fmag = Math.sqrt(res.Fx*res.Fx+res.Fy*res.Fy);
-  var Fx0=res.Fx, Fy0=res.Fy;
-  if (Fmag>Fmax && Fmag>0){ var sc=Fmax/Fmag; Fx0*=sc; Fy0*=sc; }
-  var dfz = (Fz-coefs.Fz0)/coefs.Fz0;
-  var sigmaK = Math.max(0.02, coefs.sigmaKappa0*(1+0.3*dfz));
-  var sigmaA = Math.max(0.02, coefs.sigmaAlpha0*(1+0.3*dfz));
-  tireObj.FxAct += (Fx0-tireObj.FxAct)*Math.min(1,(v/sigmaK)*dt);
-  tireObj.FyAct += (Fy0-tireObj.FyAct)*Math.min(1,(v/sigmaA)*dt);
-  var Mz = tireObj.aligningTorque(alphaRad, Fz, gammaRad, tireObj.FyAct);
-  return { Fx:tireObj.FxAct, Fy:tireObj.FyAct, Mz:Mz };
+
+var bristle = {};
+function spawnTraffic(n){
+  traffic = [];
+  var v0 = (vehicle.trafficKph||50)/3.6;
+  for (var i=0;i<n;i++){
+    traffic.push({
+      id: i+1,
+      z: 18 + i*14 + Math.random()*4,
+      x: (i%3-1)*1.75 + (Math.random()-0.5)*0.3,
+      u: v0 * (0.85 + 0.3*Math.random()),
+      lane: (i%3-1),
+      color: [0xff6b35,0x4ecdc4,0xffd93d,0x7c4dff,0x00c853][i%5]
+    });
+  }
+  vehicle.trafficN = traffic.length;
+  syncTrafficMeshes();
+}
+function updateTraffic(dt){
+  var vEgo = Math.hypot(chassis.u||0, chassis.w||0);
+  traffic.forEach(function(c, i){
+    var lead = null, best = 1e9;
+    traffic.forEach(function(o){
+      if (o===c) return;
+      if (Math.abs(o.x-c.x)<1.6 && o.z>c.z && o.z-c.z<best){ best=o.z-c.z; lead=o; }
+    });
+    var tgt = (vehicle.trafficKph||50)/3.6;
+    var acc = (tgt - c.u)*0.4;
+    if (lead && best < 10){ acc = Math.min(acc, -2.2*(1-best/10)); }
+    // ego as lead if same lane ahead of us? traffic is ahead typically
+    var dzEgo = c.z - chassis.z;
+    if (Math.abs(c.x-chassis.x)<2 && dzEgo>2 && dzEgo<12 && vEgo>c.u){
+      acc = Math.min(acc, -1.4);
+    }
+    c.u = Math.max(2, c.u + acc*dt);
+    c.z += c.u * dt;
+    if (c.z > chassis.z + 160) c.z = chassis.z + 12 + Math.random()*8;
+    if (c.z < chassis.z - 30) c.z = chassis.z + 40 + i*8;
+  });
+}
+function nearestLead(){
+  var best = null, g = 1e9;
+  traffic.forEach(function(c){
+    var dz = c.z - chassis.z;
+    if (dz>1.5 && dz<g && Math.abs(c.x-chassis.x)<2.4){ g=dz; best=c; }
+  });
+  return best;
+}
+function updateGPS(dt){
+  var v = Math.hypot(chassis.u||0, chassis.w||0);
+  var hdg = chassis.psi || 0; // 0 = +Z north-ish
+  var north = v * Math.cos(hdg);
+  var east  = v * Math.sin(hdg);
+  var mLat = 111320;
+  var mLon = 111320 * Math.cos((gpsState.lat||40)*Math.PI/180);
+  gpsState.lat += north * dt / mLat;
+  gpsState.lon += east * dt / mLon;
+  gpsState.hdg = (hdg*180/Math.PI + 360) % 360;
+  gpsState.alt = (vehicle.gpsAlt0||650) + (chassis.zS||0) + (vehicle.slopeLongDeg||0)*0.2;
+  gpsState.v = v;
+}
+function drawGPSMap(){
+  var c = document.getElementById('gpsMap');
+  if (!c) return;
+  var ctx = c.getContext('2d');
+  var w = c.width = c.clientWidth || 280;
+  var h = c.height = c.clientHeight || 120;
+  ctx.fillStyle = '#0f1825'; ctx.fillRect(0,0,w,h);
+  ctx.strokeStyle = '#2a3a55';
+  for (var i=0;i<8;i++){ ctx.beginPath(); ctx.moveTo(i*w/8,0); ctx.lineTo(i*w/8,h); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0,i*h/6); ctx.lineTo(w,i*h/6); ctx.stroke(); }
+  ctx.strokeStyle = '#ffee88'; ctx.beginPath(); ctx.moveTo(w*0.5-20,0); ctx.lineTo(w*0.5-20,h); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(w*0.5+20,0); ctx.lineTo(w*0.5+20,h); ctx.stroke();
+  function xz(x,z){ return {px: w*0.5 + x*8, py: h*0.75 - (z-chassis.z)*1.6}; }
+  traffic.forEach(function(t){
+    var p = xz(t.x, t.z);
+    ctx.fillStyle = '#ff6b35';
+    ctx.fillRect(p.px-3, p.py-5, 6, 10);
+  });
+  var me = xz(chassis.x, chassis.z);
+  ctx.fillStyle = '#e8a54b';
+  ctx.save();
+  ctx.translate(me.px, me.py);
+  ctx.rotate(-(chassis.psi||0));
+  ctx.beginPath(); ctx.moveTo(0,-8); ctx.lineTo(5,6); ctx.lineTo(-5,6); ctx.closePath(); ctx.fill();
+  ctx.restore();
+  ctx.fillStyle = '#8899bb'; ctx.font = '10px monospace';
+  ctx.fillText(gpsState.lat.toFixed(5)+'  '+gpsState.lon.toFixed(5), 6, 12);
+}
+function syncTrafficMeshes(){
+  if (!scene4w) return;
+  while (trafficMeshes.length < traffic.length){
+    var geo = new THREE.BoxGeometry(1.6, 0.9, 4.2);
+    var mat = new THREE.MeshStandardMaterial({ color: 0xff6b35, roughness:0.6 });
+    var m = new THREE.Mesh(geo, mat);
+    scene4w.add(m);
+    trafficMeshes.push(m);
+  }
+  trafficMeshes.forEach(function(m,i){
+    if (i>=traffic.length){ m.visible=false; return; }
+    var t = traffic[i];
+    m.visible = true;
+    m.position.set(t.x, 0.45, t.z);
+    m.material.color.setHex(t.color||0xff6b35);
+  });
+}
+function updateTelemetry(){
+  var v = Math.hypot(chassis.u||0, chassis.w||0);
+  var set = function(id, txt){ var e=document.getElementById(id); if(e) e.textContent=txt; };
+  set('telV', (v*3.6).toFixed(1));
+  set('telRpm', (vehicle.omegaE||0)*60/(2*Math.PI) > 200 ? ((vehicle.omegaE)*60/(2*Math.PI)).toFixed(0) : '—');
+  set('telGear', gearLabel(currentGear()));
+  set('telTtc', (chassis._ttc||99)>20 ? '—' : (chassis._ttc).toFixed(1));
+  set('telLat', gpsState.lat.toFixed(6));
+  set('telLon', gpsState.lon.toFixed(6));
+  set('telHdg', gpsState.hdg.toFixed(0));
+  set('telAlt', gpsState.alt.toFixed(0));
+  var list = document.getElementById('trafficList');
+  if (list){
+    list.innerHTML = traffic.slice(0,8).map(function(t){
+      var d = t.z - chassis.z;
+      return '<div class="traffic-row"><span>V'+t.id+'</span><span>'+(t.u*3.6).toFixed(0)+' km/h</span><span>'+d.toFixed(0)+' m</span></div>';
+    }).join('') || '<div class="traffic-row">'+(I18N[uiLang]||I18N.es).empty_traf+'</div>';
+  }
+}
+
+function applyADAS(dt){
+  chassis._acc = false; chassis._lka = false; chassis._aeb = false; chassis._ttc = 99;
+  if (!vehicleRunning) return;
+  var v = Math.hypot(chassis.u||0, chassis.w||0);
+  var wall = vehicle.obstacleDist || 18;
+  var gapWall = wall - (chassis.z + 0.6);
+  var leadCar = nearestLead();
+  var lead = vehicle.leadDist != null ? vehicle.leadDist : 40;
+  var vLead = leadCar ? leadCar.u : (vehicle.leadSpeed != null ? vehicle.leadSpeed : 12);
+  var gapLead = leadCar ? (leadCar.z - chassis.z - 4.2) : (lead - chassis.z);
+  var gap = Math.min(gapWall, gapLead);
+  var closing = gap === gapWall ? v : Math.max(0, v - vLead);
+  var ttc = closing > 0.3 ? gap / closing : 99;
+  chassis._ttc = ttc;
+
+  if (controls._driverBrk && vehicle.accOn){
+    vehicle.accOn = false;
+    var el=document.getElementById('vAccOn'); if(el) el.value='0';
+    var lb=document.getElementById('valAccOn'); if(lb) lb.textContent='off';
+  }
+  if (vehicle.aebOn && ttc < (vehicle.aebTtc||1.4) && gap < 80 && v > 1.5){
+    chassis._aeb = true;
+    var sev = Math.max(0, Math.min(1, ((vehicle.aebTtc||1.4) - ttc) / Math.max(0.2, vehicle.aebTtc||1.4)));
+    controls.brake = Math.max(controls.brake, 0.45 + 0.55*sev);
+    controls.throttle = Math.min(controls.throttle, 0.05);
+    if (!chassis._aebWarn){ chassis._aebWarn = true; try{ showToast('AEB TTC '+ttc.toFixed(1)+'s'); }catch(e){} }
+  } else {
+    chassis._aebWarn = false;
+  }
+  if (vehicle.accOn && !chassis._aeb && !controls._driverThr){
+    chassis._acc = true;
+    var vT = (vehicle.accKph||80)/3.6;
+    var gapDes = 1.8 * Math.max(8, v);
+    if (vehicle.accGap === 1) gapDes = 1.2 * Math.max(8, v);
+    if (vehicle.accGap === 3) gapDes = 2.6 * Math.max(8, v);
+    if (gap < gapDes + 6) vT = Math.min(vT, Math.max(0, vLead));
+    var e = vT - v;
+    var u = Math.max(-1, Math.min(1, e * 0.35));
+    if (u >= 0){
+      controls.throttle = Math.max(controls.throttle * 0.15, u);
+      if (controls.brake < 0.25) controls.brake *= 0.35;
+    } else {
+      controls.throttle = 0;
+      controls.brake = Math.max(controls.brake, Math.min(0.65, -u));
+    }
+  }
+  if (vehicle.lkaOn && v > 2){
+    chassis._lka = true;
+    var corr = -(vehicle.lkaGain||0.7) * (0.35*(chassis.x||0) + 0.12*(chassis.w||0));
+    var vibe = 0.008 * (vehicle.lkaGain||0.7) * Math.sin(performance.now()*0.04);
+    controls.steerTarget += Math.max(-0.14, Math.min(0.14, corr + vibe));
+  }
+}
+
+function getBristle(id){
+  if (!bristle[id]) bristle[id] = { zX:0, zY:0, xiX:0, xiY:0, stuck:false, T:25 };
+  return bristle[id];
+}
+function currentGear(){
+  return (vehicle.gear === undefined || vehicle.gear === null) ? 1 : vehicle.gear;
+}
+function gearRatioOf(g, ratios){
+  ratios = ratios || vehicle.gearRatios || [0, 3.50, 2.20, 1.52, 1.15, 0.87];
+  if (g === 0) return 0;
+  if (g < 0) return -Math.abs(vehicle.revRatio || 3.2);
+  if (ratios[g] != null && ratios[g] !== 0) return ratios[g];
+  return 1.2;
+}
+function gearLabel(g){
+  if (g < 0) return 'R';
+  if (g === 0) return 'N';
+  return String(g);
+}
+function tireTempFactor(T){
+  // Ventana de trabajo ~70-90 °C
+  if (T < 30) return Math.max(0.45, 0.55 + 0.25*(T-10)/20);
+  if (T < 70) return 0.80 + 0.20*(T-30)/40;
+  if (T < 90) return 1.0;
+  if (T < 120) return 1.0 - 0.35*(T-90)/30;
+  return 0.50;
+}
+/** Dahl + Stribeck 2D. Estado z = deformacion interna con histéresis. */
+function bristleStep(st, vsx, vsy, Fz, dt){
+  var model = vehicle.contactModel || 'dahl';
+  var surf = SURFACE[vehicle.surface||'dry'] || SURFACE.dry;
+  var tf = tireTempFactor(st.T != null ? st.T : (vehicle.ambientTemp||25));
+  var muS = (vehicle.muStatic || 1) * (surf.muS / 1.00) * tf;
+  var muD = (vehicle.muDynamic || 0.85) * (surf.muD / 0.85) * tf;
+  var vs0 = vehicle.stribeckSpeed || 0.05;
+  var sigma0 = vehicle.contactK || 150000;
+  var sigma1 = vehicle.contactC || 900;
+  var sigma2 = 40;
+  if (model === 'brush'){ sigma0 *= 1.5; sigma1 *= 1.2; }
+  if (model === 'coulomb'){ sigma0 *= 0.25; sigma1 *= 2.0; vs0 = 0.08; }
+  if (model === 'lugre'){ sigma0 *= 1.2; sigma1 *= 1.4; }
+
+  var vs = Math.hypot(vsx, vsy);
+  // Stribeck: μ(v) = μd + (μs-μd)/(1+(v/vs)^2)
+  var mu = (vs < 1e-10) ? muS : (muD + (muS - muD) / (1 + (vs/vs0)*(vs/vs0)));
+  var Fc = mu * Math.max(60, Fz);
+
+  // LuGre/Dahl: ż = v − (σ0 |v| / Fc) z
+  // NO Euler explícito: σ0~1e5 hace el ODE rígido (dt·rate puede ser >> 1).
+  // Solución exacta con v constante en el paso, equivalente a Euler implícito si rate·dt es grande.
+  var gAbs = Math.max(1e-6, Fc);
+  var zDotX = 0, zDotY = 0;
+  if (model === 'lugre' || model === 'dahl' || model === 'brush'){
+    var rate = sigma0 * vs / gAbs;
+    var a = rate * dt;
+    if (a < 1e-8){
+      zDotX = vsx; zDotY = vsy;
+      st.zX += vsx * dt;
+      st.zY += vsy * dt;
+    } else {
+      var e = Math.exp(-Math.min(40, a));
+      var zInfX = vsx / rate, zInfY = vsy / rate;
+      st.zX = zInfX + (st.zX - zInfX) * e;
+      st.zY = zInfY + (st.zY - zInfY) * e;
+      zDotX = vsx - rate * st.zX;
+      zDotY = vsy - rate * st.zY;
+    }
+  } else {
+    // Coulomb: Euler implícito sobre el resorte saturado
+    st.zX = (st.zX + vsx * dt) / (1 + dt * sigma0 / gAbs * Math.max(vs, 1e-4));
+    st.zY = (st.zY + vsy * dt) / (1 + dt * sigma0 / gAbs * Math.max(vs, 1e-4));
+    zDotX = vsx; zDotY = vsy;
+  }
+  var zmag = Math.hypot(st.zX, st.zY);
+  var zMax = Fc / Math.max(1000, sigma0);
+  if (zmag > zMax && zmag > 1e-12){
+    st.zX *= zMax / zmag;
+    st.zY *= zMax / zmag;
+  }
+  st.xiX = st.zX; st.xiY = st.zY;
+
+  // F = σ0 z + σ1 ż + σ2 v   (ż del mismo paso, no Euler sobre v)
+  var Fx = -sigma0 * st.zX - sigma1 * zDotX - sigma2 * vsx;
+  var Fy = -sigma0 * st.zY - sigma1 * zDotY - sigma2 * vsy;
+  // Saturación suave atan (sin chattering)
+  var Fm = Math.hypot(Fx, Fy);
+  if (Fm > 1e-9){
+    var sat = Fc * (2 / Math.PI) * Math.atan(Fm / (Fc + 1e-6));
+    var sc = sat / Fm;
+    Fx *= sc; Fy *= sc;
+  }
+  st.stuck = (vs < vs0 * 0.8) && (Fm <= Fc * 1.02);
+  return { Fx:Fx, Fy:Fy, Fmax:Fc, vs:vs, stuck:st.stuck, mu:mu, Mz: 0.025*Fy, T: st.T||25, tf:tf };
+}
+
+function stepWheel(tireObj, vsx, vsy, Fz, dt, id){
+  var st = getBristle(id || '_bench');
+  var r = bristleStep(st, vsx, vsy, Fz, dt);
+  if (tireObj){ tireObj.FxAct = r.Fx; tireObj.FyAct = r.Fy; }
+  return r;
 }
 
 var keys = {};
@@ -1157,17 +1724,40 @@ function readControls(dt){
     gpSteer = gp.axes[0] || 0;
   }
 
-  controls.throttle = Math.max(throttleKey ? 1 : 0, gpThrottle, touchControls.throttle);
-  controls.brake = Math.max(brakeKey ? 1 : 0, gpBrake, touchControls.brake);
+  controls.throttle = Math.max(throttleKey ? 1 : 0, gpThrottle, touchControls.throttle, vehicle._thrSlide||0);
+  controls.brake = Math.max(brakeKey ? 1 : 0, gpBrake, touchControls.brake, vehicle._brkSlide||0);
+  controls._driverThr = !!(throttleKey || gpThrottle > 0.15 || (touchControls.throttle||0) > 0.15);
+  controls._driverBrk = !!(brakeKey || gpBrake > 0.12 || (touchControls.brake||0) > 0.12);
+  // Automatico: creep al arrancar para que las ruedas giren sin pulsar W.
+  // vehicle._noCreepUntil (con caducidad, igual que _launchUntil) permite
+  // suprimirlo temporalmente tras un test — antes se usaba un residuo de
+  // freno al 5% para lo mismo, pero como nada lo quitaba después, el
+  // coche se quedaba con freno permanente y ni el creep ni acelerar a
+  // fondo lo volvían a mover.
+  var creepSuppressed = vehicle._noCreepUntil && performance.now() < vehicle._noCreepUntil;
+  if (vehicleRunning && (vehicle.gearMode||'AUTO') !== 'MANUAL' && controls.brake < 0.05 && !creepSuppressed){
+    var creep = 0.20;
+    if (vehicle._launchUntil && performance.now() < vehicle._launchUntil) creep = 0.45;
+    controls.throttle = Math.max(controls.throttle, creep);
+  }
 
   var steerKeyInput = (steerLeft ? 1 : 0) - (steerRight ? 1 : 0);
   var steerInput = touchControls.steer !== 0 ? touchControls.steer :
                     (Math.abs(gpSteer) > 0.05 ? -gpSteer : steerKeyInput);
   controls.steerTarget = steerInput * vehicle.steerMaxDeg * Math.PI/180;
-  var steerRate = 3.5;
+  applyADAS(dt);
+  var vAbs = Math.hypot(chassis.u||0, chassis.w||0);
+  var speedFac = Math.exp(-vAbs * 0.06);
+  var assist = (vehicle.epsOn ? (vehicle.epsAssist||0.7) : 0.25) * (0.35 + 0.65*speedFac);
+  var steerRate = 1.6 + 4.5 * assist;
   var diff = controls.steerTarget - controls.steerRad;
   var maxStep = steerRate*dt;
   controls.steerRad += Math.max(-maxStep, Math.min(maxStep, diff));
+  if (vehicle.epsOn && Math.abs(controls.steerTarget) < 0.02){
+    var ret = (vehicle.epsReturn||0.55) * (0.4 + 0.6*Math.min(1, vAbs/12));
+    controls.steerRad *= Math.max(0, 1 - ret * dt * 2.2);
+  }
+  chassis._eps = assist;
 }
 
 /* ===== EXTENDED VEHICLE DYNAMICS (lumped) ===== */
@@ -1208,8 +1798,8 @@ function engineTorqueNm(rpm, throttle, p){
   var tmax = p.engTmax || 220;
   var x = Math.max(0, Math.min(1.05, rpm / red));
   var map = Math.max(0, Math.sin(Math.PI * Math.min(1, x * 0.92)));
-  var T = (throttle || 0) * tmax * (0.18 + 0.82 * map);
-  if (rpm < idle) T += (idle - rpm) * 0.04;
+  var T = (throttle || 0) * tmax * (0.50 + 0.50 * map);
+  if (rpm < idle) T += (idle - rpm) * 0.08;
   T -= 0.012 * Math.max(0, rpm - idle) * 0.01 * tmax;
   return T;
 }
@@ -1231,10 +1821,19 @@ function diffSplitTorque(Tin, wL, wR, mode, lsdC){
 }
 
 function autoShift(p, rpm, throttle){
-  if (p.gearMode !== 'AUTO') return p.gear;
-  var g = p.gear || 1;
+  if (p.gearMode !== 'AUTO') return currentGear();
+  var g = currentGear();
   var red = p.engRedline || 6500;
-  if (throttle > 0.15 && rpm > red * 0.88 && g < 5) g++;
+  var u = chassis.u || 0;
+  if (g < 0){
+    if (u > 0.8 || (throttle < 0.05 && Math.abs(u) < 0.3)) g = 1;
+    return g;
+  }
+  if (g === 0){
+    if (throttle > 0.08 && u >= -0.4) g = 1;
+    return g;
+  }
+  if (throttle > 0.15 && rpm > red * 0.88 && g < 6) g++;
   if (rpm < (p.engIdle || 850) * 2.1 && g > 1) g--;
   return g;
 }
@@ -1249,8 +1848,8 @@ function stepVehicle(dt){
     return;
   }
   readControls(dt);
-  if (controls._gearUp){ vehicle.gear = Math.min(5, (vehicle.gear||1)+1); controls._gearUp = false; }
-  if (controls._gearDown){ vehicle.gear = Math.max(1, (vehicle.gear||1)-1); controls._gearDown = false; }
+  if (controls._gearUp){ vehicle.gear = Math.min(6, currentGear()+1); controls._gearUp = false; }
+  if (controls._gearDown){ vehicle.gear = Math.max(-1, currentGear()-1); controls._gearDown = false; }
 
   var gammaRad = currentGammaRad();
   var maxSubDt = 0.005;
@@ -1283,16 +1882,47 @@ function stepVehicle(dt){
     else if (vehicle.drivetrain==='REAR') driveAxles[currentNumAxles-1]=true;
     else { for (var ai=0; ai<currentNumAxles; ai++) driveAxles[ai]=true; }
 
+    chassis._bump = 0;
     var comp = {}, compDot = {}, FzSpring = {};
     currentWheelDefs.forEach(function(w){
       var zBody = zS + w.a * th + w.b * ph;
       var zBodyDot = zSd + w.a * thd + w.b * phd;
+      var zRoad = 0;
+      if (vehicle.bumpsOn){
+        var sPath = chassis.z + w.a * Math.cos(chassis.psi) - w.b * Math.sin(chassis.psi);
+        var f = vehicle.bumpFreq || 0.8;
+        var d = vehicle.bumpDepth || 0.04;
+        var wave = Math.sin(2*Math.PI*f*sPath) + 0.35*Math.sin(4*Math.PI*f*sPath + 1.7)
+                 + 0.18*Math.sin(6*Math.PI*f*sPath + (w.b||0));
+        zRoad = d * wave / 1.53;
+        zRoad *= 1 + 0.25*Math.sin(2*Math.PI*0.45*sPath + (w.b||0)*3);
+        if (zRoad > 0) zRoad *= 1 + 0.3*(vehicle.bumpAsym||0);
+      }
+      chassis._bump = Math.max(chassis._bump||0, Math.abs(zRoad));
+      if (!wheelHop[w.id]) wheelHop[w.id] = { z:0, v:0 };
+      var hop = wheelHop[w.id];
+      var muU = Math.max(12, vehicle.unsprung || 40);
+      var kt = Math.max(20000, vehicle.tireKz || 180000);
+      var wnHop = Math.sqrt(kt / muU);
+      var full6 = (vehicle.modelMode || '6dof') === '6dof';
+      if (!full6){ hop.z = 0; hop.v = 0; }
+      else {
+        var cHop = 2 * (vehicle.hopDamp != null ? vehicle.hopDamp : 0.30) * wnHop * muU;
+        var FsusH = kSus * (zBody - hop.z) + 2*(vehicle.susZeta||0.65)*Math.sqrt(kSus*muU) * (zBodyDot - hop.v);
+        var FtirH = kt * (hop.z - zRoad) + cHop * hop.v;
+        var aHop = (FsusH - FtirH) / muU;
+        hop.v += aHop * subDt;
+        hop.z += hop.v * subDt;
+        hop.z = Math.max(-0.08, Math.min(0.08, hop.z));
+        hop.v = Math.max(-4, Math.min(4, hop.v));
+      }
+      chassis._hopHz = wnHop / (2*Math.PI);
       var d0 = (preload[w.id] || 3000) / Math.max(1000, kSus);
-      var dc = d0 - zBody;
-      var dcd = -zBodyDot;
+      var dc = d0 - zBody + zRoad - (full6 ? hop.z : 0);
+      var dcd = -zBodyDot + (full6 ? hop.v : 0);
       comp[w.id] = dc; compDot[w.id] = dcd;
       var cDamp = 2*(vehicle.susZeta||0.65)*Math.sqrt(kSus*Math.max(50, vehicle.mass/currentWheelDefs.length));
-      FzSpring[w.id] = kSus*dc + cDamp*dcd;
+      FzSpring[w.id] = kSus*dc + cDamp*dcd + (full6 ? kt * hop.z * 0.05 : 0);
     });
 
     var byAxle = {};
@@ -1311,8 +1941,26 @@ function stepVehicle(dt){
     });
 
     var FzMap = {};
+    var kTor = (vehicle.chassisTorsion != null) ? vehicle.chassisTorsion : 0.80;
+    var full6b = (vehicle.modelMode || '6dof') === '6dof';
+    if (full6b){
+      var rollDemand = (chassis.phi || 0);
+      var floppy = 1 - Math.max(0.15, Math.min(1, kTor));
+      var tAcc = floppy * 18 * rollDemand - 22 * (chassis.torsion||0) - 6.5 * (chassis.torsionDot||0);
+      chassis.torsionDot = (chassis.torsionDot||0) + tAcc * subDt;
+      chassis.torsion = (chassis.torsion||0) + chassis.torsionDot * subDt;
+      chassis.torsion = Math.max(-0.12, Math.min(0.12, chassis.torsion));
+    } else {
+      chassis.torsion = 0; chassis.torsionDot = 0;
+    }
     currentWheelDefs.forEach(function(w){
-      FzMap[w.id] = Math.max(40, FzSpring[w.id] + (Farb[w.id]||0));
+      var fFlex = 0;
+      if (full6b){
+        var signSide = (w.side === 'L') ? 1 : (w.side === 'R') ? -1 : 0;
+        var signAx = (w.axle === 0) ? 1 : -1;
+        fFlex = (chassis.torsion||0) * 12000 * signSide * signAx;
+      }
+      FzMap[w.id] = Math.max(40, FzSpring[w.id] + (Farb[w.id]||0) + fFlex);
     });
 
     var drivenIds = [];
@@ -1323,13 +1971,17 @@ function stepVehicle(dt){
       }
     });
 
-    var gear = vehicle.gear || 1;
-    var iTot = (ratios[gear] || 1.2) * (vehicle.finalDrive || 3.7);
+    var gear = currentGear();
+    var ratioG = gearRatioOf(gear, ratios);
+    var iTot = ratioG * (vehicle.finalDrive || 3.7);
+    var clutchF = (vehicle.clutch != null) ? vehicle.clutch : 1;
     var wDriven = 0, nDriven = Math.max(1, drivenIds.length);
     drivenIds.forEach(function(id){ wDriven += (wheelOmega[id]||0); });
     wDriven /= nDriven;
     var rpm = Math.abs(wDriven) * iTot * 60 / (2*Math.PI);
-    var clutchLocked = (controls.throttle > 0.06) || (v > 1.2 && gear >= 1);
+    var clutchLocked = ((vehicle.gearMode||'AUTO') !== 'MANUAL')
+      ? (controls.brake < 0.85 || v > 0.4)
+      : ((controls.throttle > 0.06) || (v > 1.2 && gear >= 1));
     if (!clutchLocked){
       vehicle.omegaE = (vehicle.omegaE || 90) + ((vehicle.engIdle||850)*2*Math.PI/60 - (vehicle.omegaE||90)) * Math.min(1, 4*subDt);
       rpm = vehicle.omegaE * 60 / (2*Math.PI);
@@ -1338,11 +1990,18 @@ function stepVehicle(dt){
       rpm = vehicle.omegaE * 60 / (2*Math.PI);
     }
     vehicle.gear = autoShift(vehicle, rpm, controls.throttle);
-    gear = vehicle.gear;
-    iTot = (ratios[gear] || 1.2) * (vehicle.finalDrive || 3.7);
-    var Te = clutchLocked ? engineTorqueNm(rpm, controls.throttle, vehicle) : 0;
+    gear = currentGear();
+    iTot = gearRatioOf(gear, ratios) * (vehicle.finalDrive || 3.7);
+    var Te = (clutchLocked && Math.abs(iTot) > 0.01) ? engineTorqueNm(rpm, controls.throttle, vehicle) * (clutchF) : 0;
     var Tshaft = Te * iTot * (vehicle.engEff || 0.9);
-    if (chassis.u < -0.5 && controls.throttle > 0.1) Tshaft = -Math.abs(Tshaft);
+    // (antes había aquí una línea que forzaba Tshaft a negativo siempre
+    // que el coche fuera marcha atrás y hubiera algo de acelerador, SIN
+    // comprobar la marcha — así que si el coche acababa yendo hacia atrás
+    // estando en 1ª (p. ej. tras un choque, o rodando cuesta abajo), el
+    // motor empujaba hacia atrás en vez de intentar corregir hacia
+    // delante. gearRatioOf ya da un ratio negativo en marcha atrás de
+    // por sí, así que esa línea era redundante en reversa de verdad y
+    // activamente dañina en cualquier otro caso — se quita.)
 
     var TperAxle = {};
     var nDriveAx = Object.keys(driveAxles).length || 1;
@@ -1365,6 +2024,7 @@ function stepVehicle(dt){
 
     var FxTotal=0, FyTotal=0, MzTotal=0, FzSum=0, MpitchF=0, MrollF=0;
 
+    absCtl.active = false; tcsCtl.active = false;
     currentWheelDefs.forEach(function(w){
       if (!wheels[w.id]) wheels[w.id] = new TireModel(coefs);
       var Fz = FzMap[w.id];
@@ -1375,25 +2035,84 @@ function stepVehicle(dt){
       if (!w.steerable) alpha *= vehicle.rearAlphaFactor;
 
       var om = wheelOmega[w.id] || 0;
-      var denom = Math.max(Math.abs(uLocal), 0.85);
-      var kappa = (om * R0 - uLocal) / denom;
-      kappa = Math.max(-1.15, Math.min(1.15, kappa));
+      // Marco del neumático (ISO): vx_t hacia delante de la rueda, vy_t lateral
+      var cSt = Math.cos(steerHere), sSt = Math.sin(steerHere);
+      var vx_t =  uLocal * cSt + wLocal * sSt;
+      var vy_t = -uLocal * sSt + wLocal * cSt;
+      // Deslizamiento: velocidad del contacto respecto al suelo (vx - omega R)
+      // Fx/Fy del modelo se oponen a vs → tracción positiva al acelerar
+      var vsx = vx_t - om * R0;
+      var vsy = vy_t;
+      var r = stepWheel(wheels[w.id], vsx, vsy, Fz, subDt, w.id);
+      var stT = getBristle(w.id);
+      var Tamb = vehicle.ambientTemp || 25;
+      // Rodadura primero: su potencia SÍ calienta (antes se calculaba después y no entraba).
+      var My = (Math.abs(om) < 0.08) ? 0 : 0.012 * R0 * Fz * (om > 0 ? 1 : -1);
+      var P_slip = Math.abs(r.Fx*vsx) + Math.abs(r.Fy*vsy);
+      var P_rr = Math.abs(My * om); // ~0.012 Fz |v|  →  ~0.7–1 kW/rueda a 90 km/h
+      // C_th ~ banda de rodadura (no el neumático entero): ~2.4 kJ/K
+      // h ~ 8 + 0.28|v| W/K  →  equilibrio ~75–85 °C a 90 km/h en unos 3 min
+      var Cth = 2400;
+      var hConv = 8 + 0.28 * Math.abs(vx_t);
+      var Tnow = (stT.T != null) ? stT.T : Tamb;
+      stT.T = Math.max(-10, Math.min(140, Tnow + ((P_slip + P_rr) - hConv*(Tnow - Tamb)) / Cth * subDt));
+      r.T = stT.T;
+      var kappa = vsx / Math.max(Math.abs(uLocal), 0.25);
 
-      var r = stepWheel(wheels[w.id], kappa, alpha, Fz, gammaRad + 0.15*ph*(w.b>0?1:-1), Math.max(v,0.5), subDt);
-      var My = wheels[w.id].rollingResistance(Fz, r.Fx);
-
-      var Tbr = -controls.brake * TbrakeMax * Math.tanh((om || 0) * 0.4);
+      var vxW = vx_t;
+      var vRoll = om * R0;
+      var denSlip = Math.max(Math.abs(vxW), Math.abs(vRoll), 0.35);
+      var slipLong = (vRoll - vxW) / denSlip; // + acelera / - frena
+      var brakeCmd = controls.brake || 0;
+      var thrCmd = controls.throttle || 0;
+      // ABS: slip de frenada (rueda más lenta que el cubo)
+      var brakeSlip = Math.max(0, -slipLong);
+      if ((vehicle.absGain||0) > 0.05 && brakeCmd > 0.05 && Math.abs(vxW) > 1.0 && brakeSlip > 0.05){
+        var ac = getWheelCtl(w.id).abs;
+        ac.active = true; absCtl.active = true;
+        var errA = brakeSlip - (vehicle.absTarget||0.15);
+        ac.integral = Math.max(-0.5, Math.min(0.5, ac.integral + errA * subDt));
+        ac.phase += subDt * 10 * 2 * Math.PI;
+        var mod = 0.55 + 0.45 * Math.sin(ac.phase);
+        var pGain = (vehicle.absGain||2.5) * errA + ac.integral * 0.5;
+        brakeCmd = Math.max(0.12, Math.min(1, brakeCmd * (1 - Math.max(0, pGain) * mod)));
+      } else {
+        var ac0 = getWheelCtl(w.id).abs;
+        ac0.active = false;
+        ac0.integral *= 0.92;
+      }
+      // TCS: slip de tracción
+      var driveSlip = Math.max(0, slipLong);
+      if ((vehicle.tcsGain||0) > 0.05 && thrCmd > 0.05 && driveSlip > 0.08 && Math.abs(vxW) > 0.8){
+        var tc = getWheelCtl(w.id).tcs;
+        tc.active = true; tcsCtl.active = true;
+        var errT = driveSlip - (vehicle.tcsLimit||0.12);
+        tc.integral = Math.max(-0.3, Math.min(0.3, tc.integral + errT * subDt));
+        tc.cut = Math.max(0, Math.min(0.85, (vehicle.tcsGain||3) * errT + tc.integral * 0.3));
+      } else {
+        var tc0 = getWheelCtl(w.id).tcs;
+        tc0.active = false;
+        if (Math.abs(vxW) <= 0.8) tc0.cut = Math.min(tc0.cut||0, 0.15);
+        else tc0.cut *= 0.85;
+        tc0.integral *= 0.90;
+      }
+      var regen = ((vehicle.regenPct||0)/100) * (thrCmd < 0.04 ? 1 : 0) * 0.35 * TbrakeMax;
+      var Tbr = -(brakeCmd * TbrakeMax + regen) * Math.tanh((om || 0) * 0.55);
       var Td = Tdrive[w.id] || 0;
+      var tcNow = getWheelCtl(w.id).tcs;
+      if (tcNow.active) Td *= (1 - tcNow.cut * 0.85);
       var omDot = (Td + Tbr - My - r.Fx * R0) / Iw;
       om += omDot * subDt;
-      if (controls.brake > 0.8 && Math.abs(uLocal) < 0.4) om *= Math.max(0, 1 - 8*subDt);
+      if (controls.brake > 0.85 && Math.abs(uLocal) < 0.25 && (vehicle.absGain||0) < 0.05)
+        om *= Math.max(0, 1 - 8*subDt);
       om = Math.max(-420, Math.min(420, om));
       wheelOmega[w.id] = om;
       if (wheelSpin[w.id]==null) wheelSpin[w.id]=0;
       wheelSpin[w.id] += om * subDt;
 
-      var bx = r.Fx*Math.cos(steerHere) - r.Fy*Math.sin(steerHere);
-      var by = r.Fx*Math.sin(steerHere) + r.Fy*Math.cos(steerHere);
+      // Fuerza del suelo sobre el vehículo en ejes del chasis
+      var bx = r.Fx * cSt - r.Fy * sSt;
+      var by = r.Fx * sSt + r.Fy * cSt;
       FxTotal += bx; FyTotal += by;
       MzTotal += w.a*by - w.b*bx + r.Mz;
       FzSum += Fz;
@@ -1402,21 +2121,135 @@ function stepVehicle(dt){
       results[w.id]=r; kappasOut[w.id]=kappa; fzOut[w.id]=Fz; omegaOut[w.id]=om;
     });
 
-    var Cd=0.35, A=2.0*Math.max(1,currentNumAxles/2), rho=1.2;
-    FxTotal -= 0.5*rho*Cd*A*chassis.u*Math.abs(chassis.u);
+    lastAbsActive = absCtl.active; lastTcsActive = tcsCtl.active;
+    chassis._abs = lastAbsActive; chassis._tcs = lastTcsActive;
+    var tSum=0, tN=0;
+    currentWheelDefs.forEach(function(w){ var st=bristle[w.id]; if(st){ tSum+=st.T||25; tN++; } });
+    chassis._tireT = tN ? tSum/tN : (vehicle.ambientTemp||25);
+    var Cd = vehicle.Cd != null ? vehicle.Cd : 0.32;
+    var A = vehicle.area || 2.2;
+    var rho = 1.2;
+    var q = 0.5*rho*chassis.u*Math.abs(chassis.u);
+    var Fdrag = q * Cd * A;
+    var FaeroZ = q * A * 0.35 * ((vehicle.downforcePct||100)/100);
+    FxTotal -= Fdrag;
+    chassis._aeroN = FaeroZ;
+    chassis._dragN = Fdrag;
+    var nW = Math.max(1, currentWheelDefs.length);
+    currentWheelDefs.forEach(function(w){ FzMap[w.id] = (FzMap[w.id]||0) + FaeroZ/nW; });
 
     var m = vehicle.mass;
-    var du = FxTotal/m + chassis.w*chassis.r;
-    var dw = FyTotal/m - chassis.u*chassis.r;
+    // Ladera fija al mundo (+Z / +X). Se proyecta al chasis con ψ; no gira con el morro.
+    var gWz = -9.81 * Math.sin((vehicle.slopeLongDeg||0)*Math.PI/180);
+    var gWx = -9.81 * Math.sin((vehicle.slopeLatDeg||0)*Math.PI/180);
+    var cpsi = Math.cos(chassis.psi||0), spsi = Math.sin(chassis.psi||0);
+    var gU = gWz * cpsi + gWx * spsi;
+    var gW = gWx * cpsi - gWz * spsi;
+    chassis._gU = gU; chassis._gW = gW;
+    var gLong = -gU, gLat = -gW;
+    var du = FxTotal/m + chassis.w*chassis.r + gU;
+    var dw = FyTotal/m - chassis.u*chassis.r + gW;
     var dr = MzTotal/Math.max(100, vehicle.Iz);
     chassis.u += du*subDt; chassis.w += dw*subDt; chassis.r += dr*subDt; chassis.psi += chassis.r*subDt;
     chassis.r = Math.max(-12, Math.min(12, chassis.r));
     chassis.u = Math.max(-80, Math.min(80, chassis.u));
     chassis.w = Math.max(-40, Math.min(40, chassis.w));
+    var speed = Math.hypot(chassis.u, chassis.w);
+    var allStuck = true, FmaxSum = 0;
+    currentWheelDefs.forEach(function(w){
+      var st = bristle[w.id];
+      if (!st || !st.stuck) allStuck = false;
+      FmaxSum += (vehicle.muStatic||1) * (fzOut[w.id]||0);
+    });
+    var Fneed = m * Math.hypot(gLong, gLat);
+    var TnetApprox = (controls.throttle - controls.brake) * (vehicle.engTmax||220) * 4;
+    // Hold por equilibrio: |F_motor - F_freno - F_g| < μs·ΣFz  (freno+gas simultáneos OK)
+    var FdriveEst = (controls.throttle||0) * (vehicle.engTmax||220) * 3.5 * 3.7 / Math.max(0.2, R0);
+    var FbrakeEst = (controls.brake||0) * (vehicle.Tbrake||900) * currentWheelDefs.length / Math.max(0.2, R0);
+    var FnetReq = Math.hypot(m*gLong - FdriveEst + FbrakeEst*Math.sign(chassis.u||gLong||1)*0.5, m*gLat);
+    var FstaticCap = FmaxSum * 0.98;
+    if ((controls.throttle||0) < 0.06 && speed < 0.12 && FnetReq < FstaticCap && allStuck){
+      chassis.u *= 0.4;
+      chassis.w *= 0.4;
+      chassis.r *= 0.4;
+      if (speed < 0.025){
+        chassis.u = 0; chassis.w = 0; chassis.r = 0;
+        if ((controls.brake||0) > 0.12 || Fneed > 40){
+          currentWheelDefs.forEach(function(w){ wheelOmega[w.id] = 0; });
+        }
+      }
+    }
 
     var worldDx = chassis.u*Math.sin(chassis.psi) + chassis.w*Math.cos(chassis.psi);
     var worldDz = chassis.u*Math.cos(chassis.psi) - chassis.w*Math.sin(chassis.psi);
     chassis.x += worldDx*subDt; chassis.z += worldDz*subDt;
+    updateTraffic(subDt);
+    updateGPS(subDt);
+
+    chassis._hit = false; chassis._hitN = 0;
+    if (vehicle.collisionsOn){
+      var wallZ = vehicle.obstacleDist || 18;
+      var halfL = (vehicle.wheelbase||2.6)*0.55;
+      var noseZ = chassis.z + Math.cos(chassis.psi)*halfL;
+      var overlap = noseZ - wallZ;
+      if (overlap > 0){
+        chassis._hit = true;
+        var vN = worldDz; // velocidad hacia +Z
+        var Kc = (vehicle.chassisK||280000) * (0.45 + 0.55*(vehicle.obstacleHard||0.55));
+        var rest = vehicle.restitution || 0.28;
+        // El amortiguamiento del muelle de impacto es lo que de verdad
+        // gobierna cuánto rebota el coche — antes estaba fijo al 35% del
+        // crítico sin importar el slider de Restitución, así que con
+        // restitución baja (casi inelástica) el coche igualmente salía
+        // despedido marcha atrás. Restitución baja -> muy amortiguado
+        // (casi no rebota); restitución alta -> más ligero (rebota más).
+        var zetaCol = Math.max(0.15, Math.min(1.2, 1.15 - rest));
+        var Cc = 2*zetaCol*Math.sqrt(Kc * Math.max(200, vehicle.mass));
+        var Fspring = Kc * overlap;
+        var Fplast = Kc * (vehicle.plasticDef||0) * 0.4;
+        // Antes el amortiguador solo actuaba al acercarse (Math.max(0,vN)):
+        // en cuanto el coche empezaba a salir despedido hacia fuera, esa
+        // fuerza se anulaba y el muelle empujaba sin ningún freno, como un
+        // rebote elástico puro — el slider de Restitución apenas se notaba.
+        // Al no recortar el signo, el amortiguador también frena la salida.
+        var Fc = Fspring + Cc * vN - Fplast;
+        Fc = Math.max(0, Fc); // nunca debe succionar el coche hacia el muro
+        if (vN > 0) Fc += rest * Kc * overlap * 0.15;
+        vehicle.plasticDef = Math.min(0.25, (vehicle.plasticDef||0) + overlap * subDt * 0.8);
+        var Fwz = -Fc;
+        var bx = Fwz * Math.cos(chassis.psi);
+        var by = -Fwz * Math.sin(chassis.psi);
+        chassis.u += (bx / vehicle.mass) * subDt;
+        chassis.w += (by / vehicle.mass) * subDt;
+        chassis.r += (halfL * by * 0.15) / Math.max(400, vehicle.Iz) * subDt;
+        chassis._hitN = Fc;
+        // La colisión frenaba el chasis pero nunca tocaba el giro de las
+        // ruedas: quedaban girando muy rápido hacia delante mientras el
+        // coche ya iba marcha atrás, y ese desajuste de deslizamiento
+        // seguía empujando el coche hacia atrás mucho después del golpe
+        // (probado: seguía acelerando en reversa 5s después del impacto).
+        // Se aplica la misma deceleración equivalente al giro de cada rueda.
+        var domega = (bx / vehicle.mass) / Math.max(0.05, coefs.R0||0.315) * subDt;
+        currentWheelDefs.forEach(function(w){
+          if (wheelOmega[w.id] !== undefined) wheelOmega[w.id] += domega;
+        });
+      }
+    }
+    // Resincronizar el giro de las ruedas con la velocidad real del chasis
+    // justo al soltar el contacto: la corrección proporcional de arriba no
+    // bastaba — las ruedas seguían saliendo del choque muy descoordinadas
+    // (girando en un sentido muy distinto al de la velocidad real), lo que
+    // a través del deslizamiento generaba una fuerza que seguía arrastrando
+    // el coche hacia atrás mucho después del golpe (probado: con el creep
+    // ya reanudado y empujando hacia delante, el coche seguía acelerando
+    // en reversa). Al soltar el contacto, se asume rodadura sin deslizar.
+    if (vehicle._wasHit && !chassis._hit){
+      var uNow = chassis.u;
+      currentWheelDefs.forEach(function(w){
+        if (wheelOmega[w.id] !== undefined) wheelOmega[w.id] = uNow / Math.max(0.05, coefs.R0||0.315);
+      });
+    }
+    vehicle._wasHit = chassis._hit;
     chassis._axG = du/g; chassis._ayG = dw/g;
 
     var h = vehicle.cgHeight;
@@ -1425,9 +2258,14 @@ function stepVehicle(dt){
     var MxNet = MrollF + FyTotal * h;
     var Ix = Math.max(80, vehicle.Ix || 450);
     var Iy = Math.max(120, vehicle.Iy || 1300);
-    var azs = FzNet / m;
+    var sprung = Math.max(200, m - currentWheelDefs.length * (vehicle.unsprung||40));
+    var azs = FzNet / sprung;
     var ath = MyNet / Iy;
     var aph = MxNet / Ix;
+    if ((vehicle.modelMode||'6dof') !== '6dof'){
+      azs = 0; ath = 0; aph = 0;
+      chassis.zSdot = 0; chassis.thetaDot = 0; chassis.phiDot = 0;
+    }
     chassis.zSdot = (chassis.zSdot||0) + azs*subDt;
     chassis.thetaDot = (chassis.thetaDot||0) + ath*subDt;
     chassis.phiDot = (chassis.phiDot||0) + aph*subDt;
@@ -1455,10 +2293,21 @@ function stepVehicle(dt){
   });
   var rpmShow = chassis._rpm || 0;
   document.getElementById('carOverlay').textContent =
-    'v=' + (v*3.6).toFixed(1) + ' km/h · ' + rpmShow.toFixed(0) + ' rpm · M' + (vehicle.gear||1) +
+    'v=' + (v*3.6).toFixed(1) + ' km/h · ' + rpmShow.toFixed(0) + ' rpm · M' + gearLabel(currentGear()) +
     ' · ax=' + chassis._axG.toFixed(2) + 'g · ay=' + chassis._ayG.toFixed(2) +
-    'g · θ=' + ((chassis.theta||0)*180/Math.PI).toFixed(1) + '° φ=' + ((chassis.phi||0)*180/Math.PI).toFixed(1) +
-    '° · ruedas=' + currentWheelDefs.length;
+    'g · pend L=' + (vehicle.slopeLongDeg||0).toFixed(1) + '° A=' + (vehicle.slopeLatDeg||0).toFixed(1) +
+    ' gU=' + ((chassis._gU||0)/9.81).toFixed(2) + ' gW=' + ((chassis._gW||0)/9.81).toFixed(2) +
+    '° · θ=' + ((chassis.theta||0)*180/Math.PI).toFixed(1) + '° φ=' + ((chassis.phi||0)*180/Math.PI).toFixed(1) +
+    ' hop=' + ((chassis._hopHz||0).toFixed(1)) + 'Hz flex=' + (((chassis.torsion||0)*180/Math.PI).toFixed(2)) + '°' +
+    '° · ' + ((SURFACE[vehicle.surface||'dry']||{}).label||'seco') +
+    ' · T=' + (chassis._tireT||25).toFixed(0) + '°C aero=' + (chassis._aeroN||0).toFixed(0) + 'N' +
+    (vehicle.bumpsOn ? (' bump=' + ((chassis._bump||0)*100).toFixed(1) + 'cm') : '') +
+    ' EPS=' + (((chassis._eps||0)*100).toFixed(0)) + '%' +
+    (chassis._hit ? (' HIT '+((chassis._hitN||0)/1000).toFixed(1)+'kN') : '') +
+    (chassis._acc?' ACC':'')+(chassis._lka?' LKA':'')+(chassis._aeb?' AEB':'') +
+    ' TTC=' + ((chassis._ttc||99)>20?'—':(chassis._ttc).toFixed(1)+'s') +
+    ' · ABS=' + (chassis._abs ? 'ON' : 'off') + ' TCS=' + (chassis._tcs ? 'ON' : 'off') +
+    ' · ruedas=' + currentWheelDefs.length;
 
   update4wScene(results, kappasOut);
 }
@@ -1480,8 +2329,61 @@ function resetVehicle(){
 }
 
 /* ---- escena 3D del vehículo (N ruedas), aparte de la rueda de detalle ---- */
-var scene4w, camera4w, renderer4w, chassisGroup, chassisBody, wheelMeshes4w = {};
-var scene4wReady = false;
+var scene4w, camera4w, renderer4w, chassisGroup, chassisBody, groundGroup, wheelMeshes4w = {};
+var scene4wReady = false, obstacleMesh = null;
+
+
+function wheelStyleCatalog(){
+  return {
+    tire: {
+      street:  { rubber:0x2c2c34, sidewall:0x3a3a44, tread:0x4a4a58, nTread:10, chunk:0.07, slick:false },
+      sport:   { rubber:0x1a1a22, sidewall:0x2a2a32, tread:0x3a3a46, nTread:6, chunk:0.045, slick:false },
+      race:    { rubber:0x14141a, sidewall:0x22222a, tread:0x2a2a32, nTread:0, chunk:0.0, slick:true },
+      winter:  { rubber:0x26262e, sidewall:0x3a3a48, tread:0x555566, nTread:16, chunk:0.055, slick:false },
+      rain:    { rubber:0x202028, sidewall:0x33333f, tread:0x4a4a5a, nTread:14, chunk:0.04, slick:false },
+      offroad: { rubber:0x2a241c, sidewall:0x3a3428, tread:0x5a5040, nTread:8, chunk:0.13, slick:false },
+      truck:   { rubber:0x2a2a2a, sidewall:0x404040, tread:0x555555, nTread:12, chunk:0.10, slick:false }
+    },
+    rim: {
+      spoke5:    { n:5, color:0xc5d0dc, thick:0.045 },
+      spoke8:    { n:8, color:0xb8c4d0, thick:0.032 },
+      mesh:      { n:16, color:0x9aa8b6, thick:0.018 },
+      classic4:  { n:4, color:0xd8c9a0, thick:0.055 },
+      offroad:   { n:5, color:0x6a6a70, thick:0.07 }
+    },
+    cap: {
+      none:       { kind:'none' },
+      dish:       { kind:'dish', color:0xc0c8d0 },
+      radial:     { kind:'radial', color:0xd0d6de, n:12 },
+      convex:     { kind:'convex', color:0xe8e8ee },
+      centerlock: { kind:'lock', color:0x222228, nut:0xc9a227 }
+    }
+  };
+}
+
+function applyTireType(key, fromUi){
+  var presets = tirePresets();
+  if (!presets[key]) key = 'street';
+  vehicle.tireType = key;
+  var base = JSON.parse(JSON.stringify(presets[key]));
+  base.muScale = coefs.muScale != null ? coefs.muScale : 1;
+  base.kxScale = coefs.kxScale != null ? coefs.kxScale : 1;
+  base.kyScale = coefs.kyScale != null ? coefs.kyScale : 1;
+  coefs = base;
+  tire = new TireModel(coefs);
+  Object.keys(wheels).forEach(function(id){ wheels[id].c = coefs; });
+  computeWheelGeometry();
+  var sel = document.getElementById('presetSelect');
+  if (sel && sel.value !== key) sel.value = key;
+  var vsel = document.getElementById('vTireType');
+  if (vsel && vsel.value !== key) vsel.value = key;
+  if (fromUi !== false){
+    var sig = document.getElementById('sSigma');
+    var vsig = document.getElementById('valSigma');
+    if (sig){ sig.value = coefs.sigmaAlpha0; }
+    if (vsig) vsig.textContent = Number(coefs.sigmaAlpha0).toFixed(2);
+  }
+}
 
 function makeWheelMesh4w(){
   var g = new THREE.Group();
@@ -1490,59 +2392,108 @@ function makeWheelMesh4w(){
   var halfW = Math.max(0.04, (vehicle.tireWidthMm||215)/2000);
   var tube = Math.min(0.45*R0, Math.max(0.035, halfW*0.85));
   var torusR = Math.max(0.12, R0 - tube);
+  var cat = wheelStyleCatalog();
+  var tStyle = cat.tire[vehicle.tireType] || cat.tire.street;
+  var rStyle = cat.rim[vehicle.rimStyle] || cat.rim.spoke5;
+  var cStyle = cat.cap[vehicle.capStyle] || cat.cap.none;
 
-  // Vertices ya en plano YZ, eje de rueda = X (lateral del coche).
-  // Asi la camara de persecucion (mira hacia +Z) ve el PERFIL, no la cara.
   function axleX(geo){ geo.rotateY(Math.PI/2); return geo; }
 
   var tireMesh = new THREE.Mesh(
-    axleX(new THREE.TorusGeometry(torusR, tube, 12, 20)),
-    new THREE.MeshStandardMaterial({ color:0x3a3a48, roughness:0.85, metalness:0.08 })
+    axleX(new THREE.TorusGeometry(torusR, tube, 12, 22)),
+    new THREE.MeshStandardMaterial({ color:tStyle.rubber, roughness:0.9, metalness:0.04 })
   );
   spinGroup.add(tireMesh);
+  var sideMat = new THREE.MeshStandardMaterial({ color:tStyle.sidewall, roughness:0.85, metalness:0.06, side:THREE.DoubleSide });
+  var side1 = new THREE.Mesh(axleX(new THREE.RingGeometry(torusR*0.72, torusR+tube*0.15, 20)), sideMat);
+  side1.position.x = halfW*0.42;
+  spinGroup.add(side1);
+  var side2 = side1.clone();
+  side2.position.x = -halfW*0.42;
+  spinGroup.add(side2);
+
   var rimRing = new THREE.Mesh(
-    axleX(new THREE.TorusGeometry(torusR*0.78, Math.max(0.012, tube*0.22), 8, 16)),
-    new THREE.MeshStandardMaterial({ color:0xc5d0dc, roughness:0.25, metalness:0.85 })
+    axleX(new THREE.TorusGeometry(torusR*0.78, Math.max(0.012, tube*0.18), 8, 18)),
+    new THREE.MeshStandardMaterial({ color:rStyle.color, roughness:0.28, metalness:0.82 })
   );
   spinGroup.add(rimRing);
+  if (vehicle.rimStyle === 'offroad'){
+    var lock = new THREE.Mesh(
+      axleX(new THREE.TorusGeometry(torusR*0.92, 0.018, 6, 16)),
+      new THREE.MeshStandardMaterial({ color:0x444448, roughness:0.5, metalness:0.6 })
+    );
+    spinGroup.add(lock);
+  }
 
-  var hubGeo = new THREE.CylinderGeometry(0.32*R0, 0.32*R0, Math.max(0.06, halfW*1.35), 16);
+  var hubGeo = new THREE.CylinderGeometry(0.30*R0, 0.30*R0, Math.max(0.05, halfW*1.2), 16);
   hubGeo.rotateZ(Math.PI/2);
   var hub = new THREE.Mesh(
     hubGeo,
-    new THREE.MeshStandardMaterial({ color:0x00d4ff, roughness:0.3, metalness:0.7, emissive:0x00d4ff, emissiveIntensity:0.4 })
+    new THREE.MeshStandardMaterial({ color:0xe8a54b, roughness:0.3, metalness:0.7, emissive:0xe8a54b, emissiveIntensity:0.35 })
   );
   spinGroup.add(hub);
 
-  var faceMat = new THREE.MeshStandardMaterial({ color:0x8aa0b8, roughness:0.35, metalness:0.6, side: THREE.DoubleSide });
-  var face = new THREE.Mesh(axleX(new THREE.CircleGeometry(0.34*R0, 16)), faceMat);
-  face.position.x = halfW*0.55;
-  spinGroup.add(face);
-  var face2 = new THREE.Mesh(axleX(new THREE.CircleGeometry(0.34*R0, 16)), faceMat);
-  face2.position.x = -halfW*0.55;
-  spinGroup.add(face2);
-
-  var spokeMat = new THREE.MeshStandardMaterial({ color:0xd0dbe8, roughness:0.35, metalness:0.7 });
-  for (var i=0;i<4;i++){
-    var spoke = new THREE.Mesh(new THREE.BoxGeometry(0.03, 1.55*torusR, 0.03), spokeMat);
-    spoke.rotation.x = i*(Math.PI/4);
+  var spokeMat = new THREE.MeshStandardMaterial({ color:rStyle.color, roughness:0.32, metalness:0.75 });
+  var nSp = rStyle.n || 5;
+  for (var i=0;i<nSp;i++){
+    var spoke = new THREE.Mesh(new THREE.BoxGeometry(Math.max(0.02, halfW*0.7), 1.45*torusR, rStyle.thick), spokeMat);
+    spoke.rotation.x = i*(Math.PI/nSp);
     spinGroup.add(spoke);
   }
 
   var marks = new THREE.Group();
-  var treadMat = new THREE.MeshStandardMaterial({ color:0x5b5b6a, roughness:0.9, metalness:0.05 });
-  var markMat = new THREE.MeshStandardMaterial({ color:0xffe14a, roughness:0.35, metalness:0.1, emissive:0xffc400, emissiveIntensity:0.7 });
-  for (var t=0;t<8;t++){
-    var ang = t*Math.PI/4;
-    var bar = new THREE.Mesh(new THREE.BoxGeometry(Math.max(0.07, halfW*2.15), 0.055, 0.085), treadMat);
-    bar.position.set(0, Math.cos(ang)*(torusR+tube*0.15), Math.sin(ang)*(torusR+tube*0.15));
-    bar.rotation.x = ang;
-    marks.add(bar);
+  if (!tStyle.slick && tStyle.nTread > 0){
+    var treadMat = new THREE.MeshStandardMaterial({ color:tStyle.tread, roughness:0.95, metalness:0.02 });
+    var ch = tStyle.chunk || 0.06;
+    for (var t=0;t<tStyle.nTread;t++){
+      var ang = t*Math.PI*2/tStyle.nTread;
+      var bar = new THREE.Mesh(new THREE.BoxGeometry(Math.max(0.06, halfW*2.05), ch, ch*1.15), treadMat);
+      bar.position.set(0, Math.cos(ang)*(torusR+tube*0.12), Math.sin(ang)*(torusR+tube*0.12));
+      bar.rotation.x = ang;
+      marks.add(bar);
+    }
   }
-  var mark = new THREE.Mesh(new THREE.BoxGeometry(Math.max(0.08, halfW*2.3), 0.07, 0.10), markMat);
-  mark.position.set(0, torusR+tube*0.2, 0);
+  var markMat = new THREE.MeshStandardMaterial({ color:0xffe14a, roughness:0.35, metalness:0.1, emissive:0xffc400, emissiveIntensity:0.7 });
+  var mark = new THREE.Mesh(new THREE.BoxGeometry(Math.max(0.07, halfW*2.2), 0.06, 0.09), markMat);
+  mark.position.set(0, torusR+tube*0.18, 0);
   marks.add(mark);
   spinGroup.add(marks);
+
+  if (cStyle.kind && cStyle.kind !== 'none'){
+    var capMat = new THREE.MeshStandardMaterial({ color:cStyle.color || 0xccccd4, roughness:0.35, metalness:0.55, side:THREE.DoubleSide });
+    var capR = torusR * 0.74;
+    if (cStyle.kind === 'dish' || cStyle.kind === 'convex'){
+      var cap = new THREE.Mesh(axleX(new THREE.CircleGeometry(capR, 22)), capMat);
+      cap.position.x = halfW*0.62;
+      spinGroup.add(cap);
+      var capB = cap.clone(); capB.position.x = -halfW*0.62; spinGroup.add(capB);
+      if (cStyle.kind === 'convex'){
+        var dome = new THREE.Mesh(new THREE.SphereGeometry(capR*0.55, 12, 8, 0, Math.PI*2, 0, Math.PI*0.55), capMat);
+        dome.rotation.z = Math.PI/2;
+        dome.position.x = halfW*0.75;
+        spinGroup.add(dome);
+      }
+    } else if (cStyle.kind === 'radial'){
+      var cap2 = new THREE.Mesh(axleX(new THREE.CircleGeometry(capR, 20)), capMat);
+      cap2.position.x = halfW*0.58;
+      spinGroup.add(cap2);
+      var ribMat = new THREE.MeshStandardMaterial({ color:0x8899aa, roughness:0.4, metalness:0.6 });
+      for (var k=0;k<(cStyle.n||12);k++){
+        var rib = new THREE.Mesh(new THREE.BoxGeometry(0.012, capR*1.6, 0.02), ribMat);
+        rib.rotation.x = k*Math.PI/(cStyle.n||12);
+        rib.position.x = halfW*0.64;
+        spinGroup.add(rib);
+      }
+    } else if (cStyle.kind === 'lock'){
+      var plate = new THREE.Mesh(axleX(new THREE.CircleGeometry(capR*0.42, 16)), new THREE.MeshStandardMaterial({ color:cStyle.color, roughness:0.4, metalness:0.5 }));
+      plate.position.x = halfW*0.55;
+      spinGroup.add(plate);
+      var nut = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.04, 0.05, 6), new THREE.MeshStandardMaterial({ color:cStyle.nut, roughness:0.25, metalness:0.85 }));
+      nut.rotation.z = Math.PI/2;
+      nut.position.x = halfW*0.72;
+      spinGroup.add(nut);
+    }
+  }
 
   g.add(spinGroup);
   var arrow = createArrow(0x4ecdc4);
@@ -1595,6 +2546,7 @@ function rebuildWheelStructures(){
     newSuspension[w.id] = suspension[w.id] || { Fz:3000, FzVel:0 };
     newSpin[w.id] = wheelSpin[w.id] || 0;
     newOm[w.id] = (typeof wheelOmega!=='undefined' && wheelOmega[w.id]) || 0;
+    if (typeof bristle !== 'undefined' && !bristle[w.id]) bristle[w.id] = { zX:0, zY:0, xiX:0, xiY:0, stuck:false, T:25 };
   });
   wheels = newWheels; suspension = newSuspension; wheelSpin = newSpin; wheelOmega = newOm;
   rebuildWheelReadoutDOM();
@@ -1620,16 +2572,17 @@ function initScene4w(){
   var fill = new THREE.DirectionalLight(0xaaccff,0.55);
   fill.position.set(-15,20,-10);
   scene4w.add(fill);
+  groundGroup = new THREE.Group();
+  scene4w.add(groundGroup);
   var grid = new THREE.GridHelper(400,80,0x2a3a55,0x1a2332);
-  scene4w.add(grid);
-
-  var stripeMat1 = new THREE.MeshBasicMaterial({ color:0x00d4ff, transparent:true, opacity:0.35 });
+  groundGroup.add(grid);
+  var stripeMat1 = new THREE.MeshBasicMaterial({ color:0xe8a54b, transparent:true, opacity:0.35 });
   var stripeMat2 = new THREE.MeshBasicMaterial({ color:0xff6b6b, transparent:true, opacity:0.35 });
   for (var si=-8; si<=8; si++){
     var stripe = new THREE.Mesh(new THREE.PlaneGeometry(6,1), si%2===0 ? stripeMat1 : stripeMat2);
     stripe.rotation.x = -Math.PI/2;
     stripe.position.set(0, 0.01, si*20);
-    scene4w.add(stripe);
+    groundGroup.add(stripe);
   }
 
   chassisGroup = new THREE.Group();
@@ -1643,16 +2596,60 @@ function initScene4w(){
   chassisGroup.add(chassisBody);
   var nose = new THREE.Mesh(
     new THREE.ConeGeometry(0.18, 0.55, 8),
-    new THREE.MeshStandardMaterial({ color:0x00d4ff, emissive:0x00d4ff, emissiveIntensity:0.35, roughness:0.4 })
+    new THREE.MeshStandardMaterial({ color:0xe8a54b, emissive:0xe8a54b, emissiveIntensity:0.35, roughness:0.4 })
   );
   nose.rotation.x = -Math.PI/2;
   nose.position.set(0, 0.55, 0.55);
   chassisGroup.add(nose);
 
+  var wallGeo = new THREE.BoxGeometry(8, 1.4, 0.25);
+  var wallMat = new THREE.MeshStandardMaterial({ color:0xff3355, emissive:0x440010, roughness:0.55 });
+  obstacleMesh = new THREE.Mesh(wallGeo, wallMat);
+  obstacleMesh.position.set(0, 0.7, 18);
+  obstacleMesh.visible = false;
+  scene4w.add(obstacleMesh);
+
+  var laneMat = new THREE.LineBasicMaterial({ color: 0xffee88 });
+  function laneLine(x){
+    var g = new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(x, 0.02, -80), new THREE.Vector3(x, 0.02, 80)
+    ]);
+    return new THREE.Line(g, laneMat);
+  }
+  scene4w.add(laneLine(-1.8));
+  scene4w.add(laneLine(1.8));
+  var dashMat = new THREE.LineDashedMaterial({ color: 0xcccccc, dashSize: 2, gapSize: 2 });
+  var mid = new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+    new THREE.Vector3(0, 0.03, -80), new THREE.Vector3(0, 0.03, 80)
+  ]), dashMat);
+  mid.computeLineDistances();
+  scene4w.add(mid);
+
   scene4wReady = true;
   recomputeLayoutPositions();
   rebuildWheelStructures();
-  bindOrbitDrag(container, camera4w, function(){ renderer4w.render(scene4w, camera4w); });
+  (function bindVehicleOrbit(){
+  var dragging = false, lastX = 0, lastY = 0;
+  container.addEventListener('pointerdown', function(e){
+    if (cameraMode !== 'fixed') return;
+    dragging = true; lastX = e.clientX; lastY = e.clientY;
+    if (container.setPointerCapture) container.setPointerCapture(e.pointerId);
+  });
+  window.addEventListener('pointerup', function(){ dragging = false; });
+  window.addEventListener('pointermove', function(e){
+    if (!dragging || cameraMode !== 'fixed') return;
+    cam4wOrbit.theta -= (e.clientX - lastX) * 0.008;
+    cam4wOrbit.phi -= (e.clientY - lastY) * 0.008;
+    cam4wOrbit.phi = Math.max(0.2, Math.min(Math.PI - 0.25, cam4wOrbit.phi));
+    lastX = e.clientX; lastY = e.clientY;
+  });
+  container.addEventListener('wheel', function(e){
+    if (cameraMode !== 'fixed') return;
+    e.preventDefault();
+    cam4wOrbit.radius *= (1 + e.deltaY * 0.001);
+    cam4wOrbit.radius = Math.max(3, Math.min(40, cam4wOrbit.radius));
+  }, { passive:false });
+})();
   window.addEventListener('resize', function(){
     var w2 = container.clientWidth, h2 = container.clientHeight;
     if (w2>0 && h2>0){
@@ -1665,6 +2662,9 @@ function initScene4w(){
 
 function update4wScene(results, kappasMap){
   if (!scene4wReady) return;
+  syncTrafficMeshes();
+  drawGPSMap();
+  updateTelemetry();
 
   var tireHalfW = Math.max(0.05, (vehicle.tireWidthMm||215)/2000);
   var bodyW = Math.max(0.28, vehicle.track - 2*tireHalfW - 0.16);
@@ -1678,7 +2678,8 @@ function update4wScene(results, kappasMap){
   currentWheelDefs.forEach(function(w){
     var mesh = wheelMeshes4w[w.id];
     if (!mesh) return;
-    mesh.position.set(w.b, Math.max(0.18, coefs.R0||0.315), w.a);
+    var yHop = (wheelHop[w.id] && wheelHop[w.id].z) ? wheelHop[w.id].z : 0;
+    mesh.position.set(w.b, Math.max(0.18, coefs.R0||0.315) + yHop, w.a);
     if (mesh.userData.spinGroup) mesh.userData.spinGroup.rotation.x = -(wheelSpin[w.id]||0);
     var steerVis = 0;
     if (w.steerable){
@@ -1696,6 +2697,18 @@ function update4wScene(results, kappasMap){
 
   chassisGroup.position.set(chassis.x, 0, chassis.z);
   chassisGroup.rotation.y = chassis.psi;
+  if (obstacleMesh){
+    obstacleMesh.visible = !!vehicle.collisionsOn;
+    obstacleMesh.position.z = vehicle.obstacleDist || 18;
+    if (chassis._hit) obstacleMesh.material.emissive.setHex(0xff2244);
+    else obstacleMesh.material.emissive.setHex(0x330008);
+  }
+  if (groundGroup){
+    // Suelo fijo en el mundo: si sigue al coche, parece que no avanza
+    groundGroup.rotation.x = (vehicle.slopeLongDeg||0) * Math.PI/180;
+    groundGroup.rotation.z = -(vehicle.slopeLatDeg||0) * Math.PI/180;
+    groundGroup.position.set(0, 0, 0);
+  }
 
   // Cámara: persecución (siempre igual respecto al coche) o fija (se
   // coloca una vez y luego solo el arrastre del ratón la mueve, para
@@ -1711,10 +2724,20 @@ function update4wScene(results, kappasMap){
     var camZ = chassis.z - Math.cos(chassis.psi)*chaseDist;
     camera4w.position.set(camX, chaseHeight, camZ);
     camera4w.lookAt(chassis.x, 0.4, chassis.z);
-  } else if (!fixedCamReady){
-    camera4w.position.set(8*sizeFactor, 5*sizeFactor, -10*sizeFactor);
-    camera4w.lookAt(0, 0.3, 0);
-    fixedCamReady = true;
+  } else {
+    if (!fixedCamReady){
+      cam4wOrbit.theta = chassis.psi + 0.55;
+      cam4wOrbit.phi = 1.05;
+      cam4wOrbit.radius = Math.max(6, 7.5*sizeFactor);
+      fixedCamReady = true;
+    }
+    var th = cam4wOrbit.theta, ph = cam4wOrbit.phi, rd = cam4wOrbit.radius;
+    camera4w.position.set(
+      chassis.x + rd * Math.sin(ph) * Math.sin(th),
+      Math.max(0.8, rd * Math.cos(ph)),
+      chassis.z + rd * Math.sin(ph) * Math.cos(th)
+    );
+    camera4w.lookAt(chassis.x, 0.45, chassis.z);
   }
 
   renderer4w.render(scene4w, camera4w);
@@ -1730,6 +2753,10 @@ function bindVehicleControls(){
     { id:'vIz', key:'Iz', disp:'valIz', fmt:function(v){return v.toFixed(0);} },
     { id:'vSusK', key:'susK', disp:'valSusK', fmt:function(v){return (v/1000).toFixed(0);}, scale:1000 },
     { id:'vSusZ', key:'susZeta', disp:'valSusZ', fmt:function(v){return v.toFixed(2);} },
+    { id:'vUnsprung', key:'unsprung', disp:'valUnsprung', fmt:function(v){return v.toFixed(0);} },
+    { id:'vTireKz', key:'tireKz', disp:'valTireKz', fmt:function(v){return (v/1000).toFixed(0);}, scale:1000 },
+    { id:'vHopDamp', key:'hopDamp', disp:'valHopDamp', fmt:function(v){return v.toFixed(2);} },
+    { id:'vFlex', key:'chassisTorsion', disp:'valFlex', fmt:function(v){return (v*100).toFixed(0);}, scale:0.01 },
     { id:'vSteerMax', key:'steerMaxDeg', disp:'valSteerMax', fmt:function(v){return v.toFixed(0);} },
     { id:'vRearF', key:'rearAlphaFactor', disp:'valRearF', fmt:function(v){return v.toFixed(2);} },
     { id:'vIx', key:'Ix', disp:'valIx', fmt:function(v){return v.toFixed(0);} },
@@ -1737,7 +2764,28 @@ function bindVehicleControls(){
     { id:'vIw', key:'Iw', disp:'valIw', fmt:function(v){return v.toFixed(2);} },
     { id:'vTmax', key:'engTmax', disp:'valTmax', fmt:function(v){return v.toFixed(0);} },
     { id:'vTbr', key:'Tbrake', disp:'valTbr', fmt:function(v){return v.toFixed(0);} },
-    { id:'vAck', key:'ackPercent', disp:'valAck', fmt:function(v){return v.toFixed(0);} }
+    { id:'vAck', key:'ackPercent', disp:'valAck', fmt:function(v){return v.toFixed(0);} },
+    { id:'vSlopeL', key:'slopeLongDeg', disp:'valSlopeL', fmt:function(v){return v.toFixed(1);} },
+    { id:'vSlopeA', key:'slopeLatDeg', disp:'valSlopeA', fmt:function(v){return v.toFixed(1);} },
+    { id:'vMuS', key:'muStatic', disp:'valMuS', fmt:function(v){return v.toFixed(2);} },
+    { id:'vMuD', key:'muDynamic', disp:'valMuD', fmt:function(v){return v.toFixed(2);} },
+    { id:'vVs', key:'stribeckSpeed', disp:'valVs', fmt:function(v){return v.toFixed(3);} },
+    { id:'vTamb', key:'ambientTemp', disp:'valTamb', fmt:function(v){return v.toFixed(0);} },
+    { id:'vCd', key:'Cd', disp:'valCd', fmt:function(v){return v.toFixed(2);} },
+    { id:'vArea', key:'area', disp:'valArea', fmt:function(v){return v.toFixed(1);} },
+    { id:'vDF', key:'downforcePct', disp:'valDF', fmt:function(v){return v.toFixed(0);} },
+    { id:'vReg', key:'regenPct', disp:'valReg', fmt:function(v){return v.toFixed(0);} },
+    { id:'vBumpD', key:'bumpDepth', disp:'valBumpD', fmt:function(v){return (v*100).toFixed(1);}, scale:0.01 },
+    { id:'vBumpF', key:'bumpFreq', disp:'valBumpF', fmt:function(v){return v.toFixed(1);} },
+    { id:'vEpsA', key:'epsAssist', disp:'valEpsA', fmt:function(v){return (v*100).toFixed(0);}, scale:0.01 },
+    { id:'vEpsR', key:'epsReturn', disp:'valEpsR', fmt:function(v){return (v*100).toFixed(0);}, scale:0.01 },
+    { id:'vWall', key:'obstacleDist', disp:'valWall', fmt:function(v){return v.toFixed(0);} },
+    { id:'vRest', key:'restitution', disp:'valRest', fmt:function(v){return v.toFixed(2);} },
+    { id:'vClutch', key:'clutch', disp:'valClutch', fmt:function(v){return (v*100).toFixed(0);}, scale:0.01 },
+    { id:'vAccV', key:'accKph', disp:'valAccV', fmt:function(v){return v.toFixed(0);} },
+    { id:'vLkaG', key:'lkaGain', disp:'valLkaG', fmt:function(v){return (v*100).toFixed(0);}, scale:0.01 },
+    { id:'vAebT', key:'aebTtc', disp:'valAebT', fmt:function(v){return v.toFixed(1);} },
+    { id:'vLead', key:'leadDist', disp:'valLead', fmt:function(v){return v.toFixed(0);} }
   ];
   map.forEach(function(s){
     var el = document.getElementById(s.id);
@@ -1796,6 +2844,236 @@ function bindVehicleControls(){
   });
   document.getElementById('vDiff').addEventListener('change', function(){ vehicle.diffMode = this.value; });
   document.getElementById('vGearMode').addEventListener('change', function(){ vehicle.gearMode = this.value; });
+  document.getElementById('vTireType').addEventListener('change', function(){
+    applyTireType(this.value, true);
+    rebuildWheelMeshes3D();
+    if (typeof runTransientDemo === 'function') runTransientDemo();
+    showToast('Neumatico: ' + this.value + ' (coeficientes genericos)');
+  });
+  document.getElementById('vRimStyle').addEventListener('change', function(){
+    vehicle.rimStyle = this.value;
+    rebuildWheelMeshes3D();
+  });
+  document.getElementById('vCapStyle').addEventListener('change', function(){
+    vehicle.capStyle = this.value;
+    rebuildWheelMeshes3D();
+  });
+  document.getElementById('vContact').addEventListener('change', function(){
+    vehicle.contactModel = this.value;
+    showToast('Contacto: ' + this.value);
+  });
+  document.getElementById('vSurface').addEventListener('change', function(){
+    vehicle.surface = this.value;
+    var L = SURFACE[this.value] || SURFACE.dry;
+    showToast('Superficie: ' + L.label + '  μs=' + L.muS.toFixed(2) + ' μd=' + L.muD.toFixed(2));
+  });
+  function setSlopeSlider(id, key, disp, val){
+    vehicle[key] = val;
+    var el = document.getElementById(id), d = document.getElementById(disp);
+    if (el) el.value = val;
+    if (d) d.textContent = Number(val).toFixed(1);
+  }
+  document.getElementById('vThrS').addEventListener('input', function(){
+    vehicle._thrSlide = parseFloat(this.value)/100;
+    document.getElementById('valThrS').textContent = this.value;
+  });
+  document.getElementById('vBrkS').addEventListener('input', function(){
+    vehicle._brkSlide = parseFloat(this.value)/100;
+    document.getElementById('valBrkS').textContent = this.value;
+  });
+  document.getElementById('btnSlopeUp').addEventListener('click', function(){
+    setSlopeSlider('vSlopeL','slopeLongDeg','valSlopeL', 10);
+    setSlopeSlider('vSlopeA','slopeLatDeg','valSlopeA', 0);
+    if (!vehicleRunning) toggleVehicleRunning();
+    showToast('Subida 10° — usa freno/gas de rampa');
+  });
+  document.getElementById('btnSlopeDown').addEventListener('click', function(){
+    setSlopeSlider('vSlopeL','slopeLongDeg','valSlopeL', -10);
+    setSlopeSlider('vSlopeA','slopeLatDeg','valSlopeA', 0);
+    if (!vehicleRunning) toggleVehicleRunning();
+    showToast('Bajada 10°');
+  });
+  document.getElementById('btnSlopeLat').addEventListener('click', function(){
+    setSlopeSlider('vSlopeL','slopeLongDeg','valSlopeL', 0);
+    setSlopeSlider('vSlopeA','slopeLatDeg','valSlopeA', 8);
+    if (!vehicleRunning) toggleVehicleRunning();
+    showToast('Peralte 8°');
+  });
+  document.getElementById('btnHillHold').addEventListener('click', function(){
+    var need = Math.abs(Math.sin((vehicle.slopeLongDeg||0)*Math.PI/180)) + Math.abs(Math.sin((vehicle.slopeLatDeg||0)*Math.PI/180));
+    var pct = Math.min(100, Math.max(30, need*200));
+    vehicle._brkSlide = pct/100;
+    vehicle._thrSlide = 0;
+    document.getElementById('vBrkS').value = pct;
+    document.getElementById('valBrkS').textContent = pct.toFixed(0);
+    document.getElementById('vThrS').value = 0;
+    document.getElementById('valThrS').textContent = '0';
+    if (!vehicleRunning) toggleVehicleRunning();
+    showToast('Hold rampa: freno ' + pct.toFixed(0) + '%');
+  });
+  document.getElementById('vAbs').addEventListener('input', function(){
+    vehicle.absGain = (parseFloat(this.value)/100) * 4;
+    vehicle.absOn = parseFloat(this.value) > 5;
+    document.getElementById('valAbs').textContent = this.value;
+  });
+  document.getElementById('vTcs').addEventListener('input', function(){
+    vehicle.tcsGain = (parseFloat(this.value)/100) * 4;
+    vehicle.tcsOn = parseFloat(this.value) > 5;
+    document.getElementById('valTcs').textContent = this.value;
+  });
+  document.getElementById('btnAbsTest').addEventListener('click', function(){
+    resetVehicle(); // marcha 1ª y estado limpio: si venías de reversa, el freno de este test luchaba contra un motor empujando al revés
+    if (!vehicleRunning) toggleVehicleRunning();
+    chassis.u = 20;
+    currentWheelDefs.forEach(function(w){ wheelOmega[w.id] = 20 / Math.max(0.2, coefs.R0||0.315); });
+    vehicle._thrSlide = 0; vehicle._brkSlide = 1;
+    document.getElementById('vThrS').value = 0; document.getElementById('valThrS').textContent = '0';
+    document.getElementById('vBrkS').value = 100; document.getElementById('valBrkS').textContent = '100';
+    document.getElementById('vAbs').value = 100; vehicle.absGain = 4;
+    showToast('🛑 ABS test: 20 m/s + freno 100%');
+  });
+  document.getElementById('btnTcsTest').addEventListener('click', function(){
+    resetVehicle(); // idem: marcha 1ª garantizada antes de aplicar gas al 100%
+    setSlopeSlider('vSlopeL','slopeLongDeg','valSlopeL', 10);
+    if (!vehicleRunning) toggleVehicleRunning();
+    vehicle._thrSlide = 1; vehicle._brkSlide = 0;
+    document.getElementById('vThrS').value = 100; document.getElementById('valThrS').textContent = '100';
+    document.getElementById('vBrkS').value = 0; document.getElementById('valBrkS').textContent = '0';
+    document.getElementById('vTcs').value = 100; vehicle.tcsGain = 4;
+    showToast('⚡ TCS test: gas 100% en subida 10°');
+  });
+  document.getElementById('btnAbsTcsOff').addEventListener('click', function(){
+    vehicle.absGain = 0; vehicle.tcsGain = 0;
+    document.getElementById('vAbs').value = 0; document.getElementById('valAbs').textContent = '0';
+    document.getElementById('vTcs').value = 0; document.getElementById('valTcs').textContent = '0';
+    showToast('ABS y TCS desactivados');
+  });
+  document.getElementById('btnIceTest').addEventListener('click', function(){
+    vehicle.surface = 'ice';
+    document.getElementById('vSurface').value = 'ice';
+    setSlopeSlider('vSlopeL','slopeLongDeg','valSlopeL', 5);
+    setSlopeSlider('vSlopeA','slopeLatDeg','valSlopeA', 8);
+    if (!vehicleRunning) toggleVehicleRunning();
+    vehicle._thrSlide = 0.35;
+    document.getElementById('vThrS').value = 35;
+    document.getElementById('valThrS').textContent = '35';
+    showToast('🔷 Hielo + pendiente 5°/8° + gas 35%');
+  });
+  function bindOnOff(id, flag, labelId, toastOn){
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('change', function(){
+      vehicle[flag] = this.value === '1';
+      var lab = document.getElementById(labelId);
+      if (lab) lab.textContent = vehicle[flag] ? 'on' : 'off';
+      showToast(vehicle[flag] ? toastOn : (flag+' off'));
+    });
+  }
+  bindOnOff('vAccOn','accOn','valAccOn','ACC ON');
+  bindOnOff('vLkaOn','lkaOn','valLkaOn','LKA ON');
+  bindOnOff('vAebOn','aebOn','valAebOn','AEB ON');
+  var tn = document.getElementById('vTrafN');
+  if (tn) tn.addEventListener('input', function(){
+    vehicle.trafficN = parseInt(this.value,10);
+    document.getElementById('valTrafN').textContent = this.value;
+    spawnTraffic(vehicle.trafficN);
+  });
+  var tv = document.getElementById('vTrafV');
+  if (tv) tv.addEventListener('input', function(){
+    vehicle.trafficKph = parseFloat(this.value);
+    document.getElementById('valTrafV').textContent = this.value;
+  });
+  var ba = document.getElementById('btnTrafAdd');
+  if (ba) ba.addEventListener('click', function(){
+    vehicle.trafficN = Math.min(10, traffic.length+1);
+    var el=document.getElementById('vTrafN'); if(el) el.value=vehicle.trafficN;
+    var lb=document.getElementById('valTrafN'); if(lb) lb.textContent=vehicle.trafficN;
+    spawnTraffic(vehicle.trafficN);
+    showToast('Tráfico: '+traffic.length+' coches');
+  });
+  var bc = document.getElementById('btnTrafClr');
+  if (bc) bc.addEventListener('click', function(){
+    spawnTraffic(0);
+    var el=document.getElementById('vTrafN'); if(el) el.value=0;
+    var lb=document.getElementById('valTrafN'); if(lb) lb.textContent='0';
+    showToast('Tráfico vacío');
+  });
+  var bt = document.getElementById('btnTrafTest');
+  if (bt) bt.addEventListener('click', function(){
+    vehicle.trafficKph = 45; vehicle.accOn = vehicle.aebOn = true;
+    document.getElementById('vAccOn').value='1'; document.getElementById('valAccOn').textContent='on';
+    document.getElementById('vAebOn').value='1'; document.getElementById('valAebOn').textContent='on';
+    document.getElementById('vTrafV').value=45; document.getElementById('valTrafV').textContent='45';
+    spawnTraffic(6);
+    document.getElementById('vTrafN').value=6; document.getElementById('valTrafN').textContent='6';
+    chassis.z=0; chassis.x=0; chassis.u=18; chassis.psi=0;
+    if (!vehicleRunning) toggleVehicleRunning();
+    showToast('6 coches + ACC/AEB');
+  });
+  var gapEl = document.getElementById('vAccGap');
+  if (gapEl) gapEl.addEventListener('change', function(){ vehicle.accGap = parseInt(this.value,10); });
+  var adasBtn = document.getElementById('btnAdasTest');
+  if (adasBtn) adasBtn.addEventListener('click', function(){
+    vehicle.accOn = vehicle.lkaOn = vehicle.aebOn = vehicle.collisionsOn = true;
+    ['vAccOn','vLkaOn','vAebOn','vColOn'].forEach(function(id){ var e=document.getElementById(id); if(e) e.value='1'; });
+    ['valAccOn','valLkaOn','valAebOn','valColOn'].forEach(function(id){ var e=document.getElementById(id); if(e) e.textContent='on'; });
+    vehicle.accKph = 90; vehicle.leadDist = 35; vehicle.obstacleDist = 55;
+    chassis.x = 0.8; chassis.z = 0; chassis.psi = 0; chassis.u = 22;
+    if (!vehicleRunning) toggleVehicleRunning();
+    showToast('ADAS: ACC 90 + LKA + AEB, muro 55 m');
+  });
+  document.getElementById('vColOn').addEventListener('change', function(){
+    vehicle.collisionsOn = this.value === '1';
+    document.getElementById('valColOn').textContent = vehicle.collisionsOn ? 'on' : 'off';
+    vehicle.plasticDef = 0;
+    showToast(vehicle.collisionsOn ? 'Colisiones ON — muro en +Z' : 'Colisiones off');
+  });
+  document.getElementById('btnColTest').addEventListener('click', function(){
+    resetVehicle(); // estado limpio: marcha 1ª, ruedas a 0, sin residuos de pruebas anteriores (p.ej. reversa)
+    vehicle.collisionsOn = true;
+    document.getElementById('vColOn').value = '1';
+    document.getElementById('valColOn').textContent = 'on';
+    vehicle.obstacleDist = 12; vehicle.plasticDef = 0;
+    document.getElementById('vWall').value = 12;
+    document.getElementById('valWall').textContent = '12';
+    chassis.x = 0; chassis.z = 0; chassis.psi = 0; chassis.u = 12;
+    if (!vehicleRunning) toggleVehicleRunning();
+    vehicle._launchUntil = 0; // el coche ya sale a 12 m/s: no necesita el impulso de arranque al 45%
+    // Sin acelerador sostenido: el coche ya sale a 12 m/s, no hace falta
+    // seguir empujando — antes el 45% de gas se quedaba pegado para
+    // siempre, y tras el golpe luchaba contra las ruedas (que la propia
+    // colisión deja girando al revés), arrastrando el coche marcha atrás
+    // minuto a minuto en vez de dejarlo asentarse tras el impacto.
+    // El *creep* automático también empuja siempre hacia delante en modo
+    // automático — se suprime solo un momento (1.5s) para que el choque
+    // se asiente, con caducidad propia (no un freno que se quede pegado).
+    vehicle._thrSlide = 0; vehicle._brkSlide = 0;
+    vehicle._noCreepUntil = performance.now() + 1500;
+    document.getElementById('vThrS').value = 0;
+    document.getElementById('valThrS').textContent = '0';
+    showToast('Choque: 12 m/s hacia el muro a 12 m');
+  });
+  document.getElementById('vBumpOn').addEventListener('change', function(){
+    vehicle.bumpsOn = this.value === '1';
+    document.getElementById('valBumpOn').textContent = vehicle.bumpsOn ? 'on' : 'off';
+    showToast(vehicle.bumpsOn ? '🕳️ Baches ON' : 'Baches off');
+  });
+  var btnB = document.getElementById('btnBumpTest');
+  if (btnB) btnB.addEventListener('click', function(){
+    vehicle.bumpsOn = true;
+    document.getElementById('vBumpOn').value = '1';
+    document.getElementById('valBumpOn').textContent = 'on';
+    vehicle.bumpDepth = 0.08; vehicle.bumpFreq = 1.5;
+    document.getElementById('vBumpD').value = 8;
+    document.getElementById('valBumpD').textContent = '8.0';
+    document.getElementById('vBumpF').value = 1.5;
+    document.getElementById('valBumpF').textContent = '1.5';
+    if (!vehicleRunning) toggleVehicleRunning();
+    vehicle._thrSlide = 0.4;
+    document.getElementById('vThrS').value = 40;
+    document.getElementById('valThrS').textContent = '40';
+    showToast('🕳️ Baches 8 cm @ 1.5/m');
+  });
   [['vArbF','arbFront','valArbF'],['vArbR','arbRear','valArbR']].forEach(function(a){
     document.getElementById(a[0]).addEventListener('input', function(){
       vehicle[a[1]] = parseFloat(this.value)*1000;
@@ -1828,7 +3106,10 @@ function bindVehicleControls(){
 function toggleVehicleRunning(){
   vehicleRunning = !vehicleRunning;
   document.getElementById('btnVehicleRun').textContent = vehicleRunning ? '⏸ Detener coche' : '▶ Arrancar coche';
-  if (vehicleRunning) showToast('🏁 Coche en marcha');
+  if (vehicleRunning){
+    vehicle._launchUntil = performance.now() + 2500;
+    showToast('🏁 En marcha — creep ON. En iPhone mantén ACELERAR para más gas');
+  }
 }
 
 function bindTouchControls(){
@@ -1927,6 +3208,9 @@ function bindControls(){
     document.getElementById('sSigma').value = coefs.sigmaAlpha0.toFixed(2);
     document.getElementById('valSigma').textContent = coefs.sigmaAlpha0.toFixed(2);
     showToast('🔧 Preset "' + key + '" cargado (genérico, no comercial)');
+    vehicle.tireType = key;
+    var vt=document.getElementById('vTireType'); if (vt) vt.value = key;
+    rebuildWheelMeshes3D();
     runTransientDemo();
   });
 
@@ -2036,7 +3320,7 @@ function buildEngineSource(){
 '   Three.js, sin Chart.js). Uso: incluir este archivo y llamar a',
 '   TireSimEngine.createVehicle(params) + vehicle.step(dt, controls).',
 '',
-'   Estructura Pacejka MF6.1 (deslizamiento puro+combinado, momento',
+'   Motor exportable: step(dt, controls) + contacto cerda',
 '   autoalineante, Mx, My, factores lambda) + integrador de cuerpo',
 '   rígido plano (3 GDL) con suspensión de 2º orden por rueda.',
 '   Coeficientes por defecto genéricos/no comerciales — ver nota de',
@@ -2197,7 +3481,7 @@ computeWheelFzTargets.toString(),
 '/* ============================================================',
 '   GUÍA RÁPIDA DE INTEGRACIÓN EN OTRO JUEGO',
 '   ============================================================',
-'   1) const Engine = require("./tiresim-engine.js");  // o <script> + window.TireSimEngine',
+'   1) const Engine = require("./tiresim-engine.js");  // o  + window.TireSimEngine',
 '   2) const car = Engine.createVehicle({',
 '        mass: 1200, wheelbase: 2.6, track: 1.5, numWheels: 4,   // 3..10',
 '        drivetrain: "REAR"   // "FRONT" | "REAR" | "ALL"',
@@ -2227,6 +3511,56 @@ function exportEngine(){
   URL.revokeObjectURL(url);
   showToast('📦 Motor exportado — TireSimEngine.createVehicle(params).step(dt, controls)');
 }
+
+
+var uiLang = 'es';
+var I18N = { es: {"app_sub": "Cerda Dahl–Stribeck · rampa · ABS/TCS · ADAS · tráfico", "btn_btnAbsTcsOff": "ABS/TCS off", "btn_btnAbsTest": "🛑 Test ABS", "btn_btnAdasTest": "ADAS test", "btn_btnApplyCoef": "Aplicar coeficientes", "btn_btnBrake": "🛑 FRENAR", "btn_btnBumpTest": "🕳️ Test baches", "btn_btnColTest": "💥 Test choque", "btn_btnExport": "📥 Exportar CSV", "btn_btnExportEngine": "📦 Exportar motor (JS)", "btn_btnFlexTest": "Test flexión", "btn_btnHillHold": "🛑 Hold rampa", "btn_btnHopTest": "Test hop", "btn_btnIceTest": "🔷 Test hielo", "btn_btnManual": "❓ Ayuda", "btn_btnReset": "↺ Reset", "btn_btnResetCar2": "↺ Reset posición", "btn_btnSlopeDown": "⬇️ Bajada 10°", "btn_btnSlopeLat": "↔️ Lateral 8°", "btn_btnSlopeUp": "⛰️ Subida 10°", "btn_btnSweep": "📈 Barrido κ", "btn_btnTcsTest": "⚡ Test TCS", "btn_btnThrottle": "🏎️ ACELERAR", "btn_btnTrafAdd": "+ coche", "btn_btnTrafClr": "Vaciar", "btn_btnTrafTest": "Test tráfico", "btn_lang": "🌐 EN", "dyn_camera_chase": "🎥 Cámara: persecución", "dyn_camera_fixed": "🎥 Cámara: fija", "dyn_car_running": "⏸ Detener coche", "dyn_car_stopped": "▶ Arrancar coche", "dyn_pause_off": "⏸ Pausar", "dyn_pause_on": "▶ Reanudar", "dyn_record_off": "⏺ Grabar", "dyn_record_on": "⏹ Detener", "dyn_theme_dark": "🌙 Oscuro", "dyn_theme_light": "☀️ Claro", "honesty_note": "<b>Nota honesta:</b> contacto <b>Dahl + Stribeck + histéresis</b> (opción LuGre). Hold en rampa: si |F_motor − F_freno − F_g| &lt; μs·Fz, v y ω se quedan en 0. No hay división por velocidad cero. Coeficientes genéricos, no un ensayo de fabricante.", "lbl_presetSelect": "Preset de neumático (genérico, no comercial)", "lbl_sAlpha": "Ángulo de deriva α ", "lbl_sFz": "Carga vertical Fz ", "lbl_sGamma": "Ángulo de camber γ ", "lbl_sKappa": "Deslizamiento longitudinal κ ", "lbl_sKx": "Rigidez de deslizamiento (κ) ", "lbl_sKy": "Rigidez de deriva (α) ", "lbl_sMu": "μ pico (long./lat.) ", "lbl_sSigma": "Longitud de relajación σ ", "lbl_sSpeed": "Velocidad ", "lbl_vAbs": "ABS ganancia ", "lbl_vAccGap": "ACC hueco", "lbl_vAccOn": "ACC ", "lbl_vAccV": "ACC velocidad ", "lbl_vAck": "Ackermann trapecio ", "lbl_vAebOn": "AEB ", "lbl_vAebT": "AEB TTC ", "lbl_vArbF": "Barra ant. ", "lbl_vArbR": "Barra post. ", "lbl_vArea": "Área frontal ", "lbl_vBrkS": "Freno (rampa) ", "lbl_vBumpD": "Prof. bache ", "lbl_vBumpF": "Freq. baches ", "lbl_vBumpOn": "Baches ", "lbl_vCG": "Altura CDG ", "lbl_vCapStyle": "Tapacubos", "lbl_vCd": "Cd aero ", "lbl_vClutch": "Embrague ", "lbl_vColOn": "Colisiones ", "lbl_vContact": "Modelo de contacto", "lbl_vDF": "Downforce ", "lbl_vDiff": "Diferencial", "lbl_vDrivetrain": "Tren motriz", "lbl_vEpsA": "EPS asistencia ", "lbl_vEpsR": "EPS retorno ", "lbl_vFlex": "Rigidez torsión chasis ", "lbl_vGearMode": "Cambio", "lbl_vHopDamp": "Amort. hop (ζ) ", "lbl_vIw": "Inercia rueda Iw ", "lbl_vIx": "Ix roll ", "lbl_vIy": "Iy pitch ", "lbl_vIz": "Inercia de guiñada Iz ", "lbl_vLead": "Coche delante a ", "lbl_vLkaG": "LKA ganancia ", "lbl_vLkaOn": "LKA ", "lbl_vMass": "Masa vehículo ", "lbl_vModelMode": "Modelo de chasis", "lbl_vMuD": "μ dinámica ", "lbl_vMuS": "μ estática ", "lbl_vNumWheels": "Número de ruedas ", "lbl_vProfile": "Perfil (altura/ancho) ", "lbl_vRearF": "Factor α ejes no dir. ", "lbl_vReg": "Freno regen ", "lbl_vRest": "Restitución ", "lbl_vRimD": "Diámetro de llanta ", "lbl_vRimStyle": "Tipo de llanta", "lbl_vSlopeA": "Pendiente LAT (izq + / der −) ", "lbl_vSlopeL": "Pendiente LONG (subida + / bajada −) ", "lbl_vSteerMax": "Ángulo máx. dirección ", "lbl_vSurface": "Superficie", "lbl_vSusK": "Rigidez suspensión ", "lbl_vSusZ": "Amortiguación (ζ) ", "lbl_vTamb": "T ambiente ", "lbl_vTbr": "Par máximo freno ", "lbl_vTcs": "TCS ganancia ", "lbl_vThrS": "Acelerador (rampa) ", "lbl_vTireKz": "Rigidez vertical neumático ", "lbl_vTireType": "Tipo de neumático", "lbl_vTireW": "Ancho de neumático ", "lbl_vTmax": "Motor Tmáx ", "lbl_vTrack": "Ancho de vía ", "lbl_vTrafN": "N.º coches ", "lbl_vTrafV": "Vel. tráfico ", "lbl_vUnsprung": "Masa no suspendida / rueda ", "lbl_vVs": "Vel. Stribeck ", "lbl_vWB": "Distancia entre ejes ", "lbl_vWD": "Reparto peso delantero ", "lbl_vWall": "Muro a ", "sec_tele": "Telemetría + GPS", "sec_traf": "Tráfico", "title_ayuda": "Ayuda — TireSim Pro", "title_ayudas_3d": "Ayudas visuales 3D (no son física)", "title_controles": "Controles", "title_estado": "Estado del neumático", "title_lecturas": "Lecturas en tiempo real", "title_rueda_llanta": "Rueda y llanta", "title_telemetria": "Telemetría + GPS", "title_trafico": "Tráfico", "title_vehiculo": "Simulación de vehículo — N ruedas dependientes entre sí (aparte de la rueda de detalle de arriba)", "tl_gear": "marcha", "tl_hdg": "rumbo °", "traf_add": "+ coche", "traf_clr": "Vaciar", "traf_n": "N.º coches", "traf_test": "Test tráfico", "traf_v": "Vel. tráfico"}, en: {"app_sub": "Dahl–Stribeck bristle · ramp · ABS/TCS · ADAS · traffic", "btn_btnAbsTcsOff": "ABS/TCS off", "btn_btnAbsTest": "🛑 ABS test", "btn_btnAdasTest": "ADAS test", "btn_btnApplyCoef": "Apply coefficients", "btn_btnBrake": "🛑 BRAKE", "btn_btnBumpTest": "🕳️ Bump test", "btn_btnColTest": "💥 Crash test", "btn_btnExport": "📥 Export CSV", "btn_btnExportEngine": "📦 Export engine (JS)", "btn_btnFlexTest": "Flex test", "btn_btnHillHold": "🛑 Hill hold", "btn_btnHopTest": "Hop test", "btn_btnIceTest": "🔷 Ice test", "btn_btnManual": "❓ Help", "btn_btnReset": "↺ Reset", "btn_btnResetCar2": "↺ Reset position", "btn_btnSlopeDown": "⬇️ Downhill 10°", "btn_btnSlopeLat": "↔️ Lateral 8°", "btn_btnSlopeUp": "⛰️ Uphill 10°", "btn_btnSweep": "📈 κ Sweep", "btn_btnTcsTest": "⚡ TCS test", "btn_btnThrottle": "🏎️ THROTTLE", "btn_btnTrafAdd": "+ car", "btn_btnTrafClr": "Clear", "btn_btnTrafTest": "Traffic test", "btn_lang": "🌐 ES", "dyn_camera_chase": "🎥 Camera: chase", "dyn_camera_fixed": "🎥 Camera: fixed", "dyn_car_running": "⏸ Stop car", "dyn_car_stopped": "▶ Start car", "dyn_pause_off": "⏸ Pause", "dyn_pause_on": "▶ Resume", "dyn_record_off": "⏺ Record", "dyn_record_on": "⏹ Stop", "dyn_theme_dark": "🌙 Dark", "dyn_theme_light": "☀️ Light", "honesty_note": "<b>Honest note:</b> <b>Dahl + Stribeck + hysteresis</b> contact model (LuGre option). Hill hold: if |F_engine − F_brake − F_gravity| &lt; μs·Fz, v and ω stay at 0. No division by zero speed anywhere. Generic coefficients, not a manufacturer's test data.", "lbl_presetSelect": "Tire preset (generic, non-commercial)", "lbl_sAlpha": "Slip angle α ", "lbl_sFz": "Vertical load Fz ", "lbl_sGamma": "Camber angle γ ", "lbl_sKappa": "Longitudinal slip κ ", "lbl_sKx": "Slip stiffness (κ) ", "lbl_sKy": "Cornering stiffness (α) ", "lbl_sMu": "Peak μ (long./lat.) ", "lbl_sSigma": "Relaxation length σ ", "lbl_sSpeed": "Speed ", "lbl_vAbs": "ABS gain ", "lbl_vAccGap": "ACC gap", "lbl_vAccOn": "ACC ", "lbl_vAccV": "ACC speed ", "lbl_vAck": "Ackermann trapezoid ", "lbl_vAebOn": "AEB ", "lbl_vAebT": "AEB TTC ", "lbl_vArbF": "Front ARB ", "lbl_vArbR": "Rear ARB ", "lbl_vArea": "Frontal area ", "lbl_vBrkS": "Brake (ramp) ", "lbl_vBumpD": "Bump depth ", "lbl_vBumpF": "Bump frequency ", "lbl_vBumpOn": "Bumps ", "lbl_vCG": "CG height ", "lbl_vCapStyle": "Hubcap", "lbl_vCd": "Aero Cd ", "lbl_vClutch": "Clutch ", "lbl_vColOn": "Collisions ", "lbl_vContact": "Contact model", "lbl_vDF": "Downforce ", "lbl_vDiff": "Differential", "lbl_vDrivetrain": "Drivetrain", "lbl_vEpsA": "EPS assist ", "lbl_vEpsR": "EPS return ", "lbl_vFlex": "Chassis torsional stiffness ", "lbl_vGearMode": "Transmission", "lbl_vHopDamp": "Hop damping (ζ) ", "lbl_vIw": "Wheel inertia Iw ", "lbl_vIx": "Ix roll ", "lbl_vIy": "Iy pitch ", "lbl_vIz": "Yaw inertia Iz ", "lbl_vLead": "Lead car at ", "lbl_vLkaG": "LKA gain ", "lbl_vLkaOn": "LKA ", "lbl_vMass": "Vehicle mass ", "lbl_vModelMode": "Chassis model", "lbl_vMuD": "Kinetic μ ", "lbl_vMuS": "Static μ ", "lbl_vNumWheels": "Number of wheels ", "lbl_vProfile": "Profile (aspect ratio) ", "lbl_vRearF": "α factor, non-steered axles ", "lbl_vReg": "Regen braking ", "lbl_vRest": "Restitution ", "lbl_vRimD": "Rim diameter ", "lbl_vRimStyle": "Rim style", "lbl_vSlopeA": "LAT. grade (left + / right −) ", "lbl_vSlopeL": "LONG. grade (uphill + / downhill −) ", "lbl_vSteerMax": "Max steering angle ", "lbl_vSurface": "Surface", "lbl_vSusK": "Suspension stiffness ", "lbl_vSusZ": "Damping (ζ) ", "lbl_vTamb": "Ambient T ", "lbl_vTbr": "Max brake torque ", "lbl_vTcs": "TCS gain ", "lbl_vThrS": "Throttle (ramp) ", "lbl_vTireKz": "Tire vertical stiffness ", "lbl_vTireType": "Tire type", "lbl_vTireW": "Tire width ", "lbl_vTmax": "Engine Tmax ", "lbl_vTrack": "Track width ", "lbl_vTrafN": "Number of cars ", "lbl_vTrafV": "Traffic speed ", "lbl_vUnsprung": "Unsprung mass / wheel ", "lbl_vVs": "Stribeck speed ", "lbl_vWB": "Wheelbase ", "lbl_vWD": "Front weight distribution ", "lbl_vWall": "Wall at ", "sec_tele": "Telemetry + GPS", "sec_traf": "Traffic", "title_ayuda": "Help — TireSim Pro", "title_ayudas_3d": "3D visual aids (not physics)", "title_controles": "Controls", "title_estado": "Tire state", "title_lecturas": "Real-time readings", "title_rueda_llanta": "Wheel and rim", "title_telemetria": "Telemetry + GPS", "title_trafico": "Traffic", "title_vehiculo": "Vehicle simulation — N interdependent wheels (separate from the detail wheel above)", "tl_gear": "gear", "tl_hdg": "heading °", "traf_add": "+ car", "traf_clr": "Clear", "traf_n": "Number of cars", "traf_test": "Traffic test", "traf_v": "Traffic speed"} };
+
+function applyI18n(){
+  var pack = I18N[uiLang] || I18N.es;
+  document.querySelectorAll('[data-i18n]').forEach(function(el){
+    var k = el.getAttribute('data-i18n');
+    if (pack[k] != null) el.textContent = pack[k];
+  });
+  var hn = document.getElementById('honestyNote');
+  if (hn && pack.honesty_note) hn.innerHTML = pack.honesty_note;
+  var sub = document.querySelector('.brand .sub');
+  if (sub) sub.textContent = pack.app_sub;
+  var man = document.getElementById('btnManual');
+  var th = document.getElementById('btnTheme');
+  var ex = document.getElementById('btnExportEngine');
+  var bEs = document.getElementById('btnLangEs');
+  var bEn = document.getElementById('btnLangEn');
+  if (bEs) bEs.classList.toggle('on', uiLang === 'es');
+  if (bEn) bEn.classList.toggle('on', uiLang === 'en');
+  if (ex) ex.textContent = pack.btn_btnExportEngine;
+  if (man){
+    var panel = document.getElementById('manualPanel');
+    var open = panel && panel.style.display === 'block';
+    man.textContent = open ? (uiLang==='en' ? '❓ Close help' : '❓ Cerrar ayuda') : pack.btn_btnManual;
+  }
+  if (th){
+    var light = document.documentElement.getAttribute('data-theme') === 'light';
+    th.textContent = light ? (uiLang==='en' ? '☀️ Light' : '☀️ Claro') : (uiLang==='en' ? '🌙 Dark' : '🌙 Oscuro');
+  }
+  // Botones de texto dinámico (estado + idioma a la vez), igual que el resto de la app.
+  var pauseEl = document.getElementById('btnPause');
+  if (pauseEl) pauseEl.textContent = (typeof simPaused!=='undefined' && simPaused) ? (uiLang==='en'?'▶ Resume':'▶ Reanudar') : (uiLang==='en'?'⏸ Pause':'⏸ Pausar');
+  var camEl = document.getElementById('btnCameraMode');
+  if (camEl) camEl.textContent = (typeof cameraMode!=='undefined' && cameraMode==='fixed') ? (uiLang==='en'?'🎥 Camera: fixed':'🎥 Cámara: fija') : (uiLang==='en'?'🎥 Camera: chase':'🎥 Cámara: persecución');
+  var runEl = document.getElementById('btnVehicleRun');
+  if (runEl) runEl.textContent = (typeof vehicleRunning!=='undefined' && vehicleRunning) ? (uiLang==='en'?'⏸ Stop car':'⏸ Detener coche') : (uiLang==='en'?'▶ Start car':'▶ Arrancar coche');
+  var recEl = document.getElementById('btnRecord');
+  if (recEl) recEl.textContent = (typeof state!=='undefined' && state.recording) ? (uiLang==='en'?'⏹ Stop':'⏹ Detener') : (uiLang==='en'?'⏺ Record':'⏺ Grabar');
+  var helpTitle = document.querySelector('#manualPanel .section-title');
+  if (helpTitle) helpTitle.textContent = uiLang==='en' ? 'Help — TireSim Pro' : 'Ayuda — TireSim Pro';
+}
+function setLang(l){
+  uiLang = (l === 'en') ? 'en' : 'es';
+  try { localStorage.setItem('tiresim_lang', uiLang); } catch(e){}
+  applyI18n();
+}
+function toggleLang(){ setLang(uiLang === 'es' ? 'en' : 'es'); }
 
 function showToast(msg){
   var el = document.getElementById('toast');
@@ -2262,16 +3596,46 @@ function init(){
   try { savedTheme = localStorage.getItem('tiresim_theme') || 'dark'; } catch(e){}
   document.documentElement.setAttribute('data-theme', savedTheme);
   document.getElementById('btnTheme').textContent = savedTheme === 'light' ? '☀️ Claro' : '🌙 Oscuro';
+  document.getElementById('btnLangEs').addEventListener('click', function(){ setLang('es'); });
+  document.getElementById('btnLangEn').addEventListener('click', function(){ setLang('en'); });
+  var mm = document.getElementById('vModelMode');
+  if (mm) mm.addEventListener('change', function(){ vehicle.modelMode = this.value; showToast(this.value === '6dof' ? '6DOF on' : '3DOF planta'); });
+  var bh = document.getElementById('btnHopTest');
+  if (bh) bh.addEventListener('click', function(){
+    vehicle.modelMode = '6dof';
+    var sel = document.getElementById('vModelMode'); if (sel) sel.value = '6dof';
+    vehicle.hopDamp = 0.08; vehicle.tireKz = 150000; vehicle.unsprung = 45;
+    var hd = document.getElementById('vHopDamp'); if (hd){ hd.value = 0.08; }
+    var vd = document.getElementById('valHopDamp'); if (vd) vd.textContent = '0.08';
+    vehicle.bumpsOn = true;
+    if (!vehicleRunning) { var b=document.getElementById('btnVehicleRun'); if (b) b.click(); }
+    showToast('Hop test: ζ bajo + baches');
+  });
+  var bf = document.getElementById('btnFlexTest');
+  if (bf) bf.addEventListener('click', function(){
+    vehicle.modelMode = '6dof';
+    var sel = document.getElementById('vModelMode'); if (sel) sel.value = '6dof';
+    vehicle.chassisTorsion = 0.25;
+    var sl = document.getElementById('vFlex'); if (sl) sl.value = 25;
+    var vl = document.getElementById('valFlex'); if (vl) vl.textContent = '25';
+    controls.steerTarget = 0.25;
+    if (!vehicleRunning) { var b=document.getElementById('btnVehicleRun'); if (b) b.click(); }
+    showToast('Flex test: torsión blanda + dirección');
+  });
   document.getElementById('btnTheme').addEventListener('click', toggleTheme);
   document.getElementById('btnExportEngine').addEventListener('click', exportEngine);
   document.getElementById('btnManual').addEventListener('click', function(){
     var panel = document.getElementById('manualPanel');
     var open = panel.style.display === 'none' || panel.style.display === '';
     panel.style.display = open ? 'block' : 'none';
-    this.textContent = open ? '📖 Cerrar manual' : '📖 Manual';
+    applyI18n();
+    var pack = I18N[uiLang]||I18N.es;
+    this.textContent = open ? pack.help_close : pack.help_btn;
     if (open) panel.scrollIntoView({ behavior:'smooth', block:'start' });
   });
 
+  try { uiLang = localStorage.getItem('tiresim_lang') || 'es'; } catch(e){ uiLang='es'; }
+  applyI18n();
   applySimpleCoefs();
   initCharts();
   initScene();
