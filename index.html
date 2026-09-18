@@ -2086,7 +2086,7 @@ function drawGPSMap(){
   ctx.fillStyle = '#e8a54b';
   ctx.save();
   ctx.translate(me.px, me.py);
-  ctx.rotate(-(chassis.psi||0));
+  ctx.rotate(chassis.psi||0);
   ctx.beginPath(); ctx.moveTo(0,-8); ctx.lineTo(5,6); ctx.lineTo(-5,6); ctx.closePath(); ctx.fill();
   ctx.restore();
   ctx.fillStyle = '#8899bb'; ctx.font = '10px monospace';
@@ -2152,7 +2152,7 @@ function drawTrackMinimap(ctx, w, h){
   ctx.fillStyle = (chassis._onTrack === false) ? '#ff6b6b' : '#e8a54b';
   ctx.save();
   ctx.translate(me.px, me.py);
-  ctx.rotate(-(chassis.psi||0));
+  ctx.rotate(chassis.psi||0);
   ctx.beginPath(); ctx.moveTo(0,-7); ctx.lineTo(5,5); ctx.lineTo(-5,5); ctx.closePath(); ctx.fill();
   ctx.restore();
 
