@@ -2076,7 +2076,7 @@ function drawGPSMap(){
     ctx.beginPath(); ctx.moveTo(0,i*h/6); ctx.lineTo(w,i*h/6); ctx.stroke(); }
   ctx.strokeStyle = '#ffee88'; ctx.beginPath(); ctx.moveTo(w*0.5-20,0); ctx.lineTo(w*0.5-20,h); ctx.stroke();
   ctx.beginPath(); ctx.moveTo(w*0.5+20,0); ctx.lineTo(w*0.5+20,h); ctx.stroke();
-  function xz(x,z){ return {px: w*0.5 + x*8, py: h*0.75 - (z-chassis.z)*1.6}; }
+  function xz(x,z){ return {px: w*0.5 - x*8, py: h*0.75 - (z-chassis.z)*1.6}; }
   traffic.forEach(function(t){
     var p = xz(t.x, t.z);
     ctx.fillStyle = '#ff6b35';
@@ -2086,7 +2086,7 @@ function drawGPSMap(){
   ctx.fillStyle = '#e8a54b';
   ctx.save();
   ctx.translate(me.px, me.py);
-  ctx.rotate(chassis.psi||0);
+  ctx.rotate(-(chassis.psi||0));
   ctx.beginPath(); ctx.moveTo(0,-8); ctx.lineTo(5,6); ctx.lineTo(-5,6); ctx.closePath(); ctx.fill();
   ctx.restore();
   ctx.fillStyle = '#8899bb'; ctx.font = '10px monospace';
@@ -2114,7 +2114,7 @@ function buildTrackMinimapCache(w, h){
   var scale = Math.min((w-2*pad)/spanX, (h-2*pad)/spanZ);
   trackMinimapCache = {
     totalLength: TRACK.totalLength, points: pts, scale: scale,
-    offX: pad - minX*scale + (w-2*pad-spanX*scale)/2,
+    offX: pad + maxX*scale + (w-2*pad-spanX*scale)/2,
     offY: pad - minZ*scale + (h-2*pad-spanZ*scale)/2
   };
 }
@@ -2123,7 +2123,10 @@ function drawTrackMinimap(ctx, w, h){
     buildTrackMinimapCache(w, h);
   }
   var cache = trackMinimapCache;
-  function toPx(x, z){ return { px: x*cache.scale + cache.offX, py: h - (z*cache.scale + cache.offY) }; }
+  // X invertido a propósito: en una vista cenital norte-arriba, girar a la
+  // izquierda de verdad (psi positivo, comprobado con la física real) debe
+  // curvar hacia la izquierda de la pantalla, no hacia la derecha.
+  function toPx(x, z){ return { px: -x*cache.scale + cache.offX, py: h - (z*cache.scale + cache.offY) }; }
 
   // Trazado completo
   ctx.strokeStyle = '#4ecdc4';
@@ -2152,7 +2155,7 @@ function drawTrackMinimap(ctx, w, h){
   ctx.fillStyle = (chassis._onTrack === false) ? '#ff6b6b' : '#e8a54b';
   ctx.save();
   ctx.translate(me.px, me.py);
-  ctx.rotate(chassis.psi||0);
+  ctx.rotate(-(chassis.psi||0));
   ctx.beginPath(); ctx.moveTo(0,-7); ctx.lineTo(5,5); ctx.lineTo(-5,5); ctx.closePath(); ctx.fill();
   ctx.restore();
 
